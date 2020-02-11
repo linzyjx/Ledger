@@ -1,48 +1,54 @@
 <template>
-    <div class="slidebar">
+    <div class="sidebar" style="height: 100%">
         <el-menu default-active="1-4-1"
                  class="el-menu-vertical-demo"
                  @open="handleOpen"
                  @close="handleClose"
                  router="true"
-                 :collapse="isCollapse">
-            <el-submenu index="1">
-                <template slot="title">
-                    <i class="el-icon-location"></i>
-                    <span slot="title">导航一</span>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group title="分组2">
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-                <el-submenu index="1-4">
-                    <span slot="title">选项4</span>
-                    <el-menu-item index="1-4-1">选项1</el-menu-item>
-                </el-submenu>
-            </el-submenu>
-            <el-menu-item index="App">
-                <i class="el-icon-menu"></i>
-                <span slot="title">App</span>
-            </el-menu-item>
-            <el-menu-item index="HelloWorld">
-                <i class="el-icon-document"></i>
-                <span slot="title">HelloWorld</span>
-            </el-menu-item>
-            <el-menu-item index="4">
-                <i class="el-icon-setting"></i>
-                <span slot="title">导航四</span>
-            </el-menu-item>
+                 :collapse="isCollapse"
+                 style="height: 100%">
+            <el-container style="height: 100%">
+                <el-main>
+                    <el-menu-item index="App">
+                        <i class="el-icon-menu"></i>
+                        <span slot="title">App</span>
+                    </el-menu-item>
+                    <el-menu-item index="HelloWorld">
+                        <i class="el-icon-document"></i>
+                        <span slot="title">HelloWorld</span>
+                    </el-menu-item>
+                </el-main>
+                <el-footer>
+                    <el-menu-item v-on:click="isCollapse=!isCollapse">
+                        <i v-bind:class="[isCollapse?'el-icon-arrow-right':'el-icon-arrow-left']"></i>
+                        <span slot="title">{{isCollapse?'展开':'折叠'}}</span>
+                    </el-menu-item>
+                </el-footer>
+            </el-container>
         </el-menu>
     </div>
 </template>
 
 <style>
     .el-menu-vertical-demo:not(.el-menu--collapse) {
-        width: 200px;
+        width: 150px;
         min-height: 400px;
+    }
+    .sidebar::-webkit-scrollbar {
+        width: 0;
+    }
+    .sidebar > ul {
+        height: 100%;
+    }
+    .sidebar .el-main{
+        padding: 0;
+    }
+    .sidebar .el-footer{
+        padding: 0;
+    }
+    /*隐藏收缩动画时出现的滚动条*/
+    .el-main::-webkit-scrollbar {
+        width: 0;
     }
 </style>
 

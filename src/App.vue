@@ -10,11 +10,6 @@
                     <ElementNavSlideBar :is-collapse="isc"/>
                 </el-aside>
                 <el-main>
-                    <el-radio-group v-model="isc">
-                        <el-radio-button :label="false">展开</el-radio-button>
-                        <el-radio-button :label="true">收起</el-radio-button>
-                    </el-radio-group>
-                    <p/>
                     <router-link to="HelloWorld">HelloWorld</router-link>
                     <router-view></router-view>
                 </el-main>
@@ -51,9 +46,15 @@
         /*margin-top: 60px;*/
     }
 
-    body {
+    html, body, #app, .el-container {
+        /*设置内部填充为0，几个布局元素之间没有间距*/
+        padding: 0;
+        /*外部间距也是如此设置*/
         margin: 0;
+        /*统一设置高度为100%*/
+        height: 100%;
     }
+
     .el-header {
         padding: 0;
     }
