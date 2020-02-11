@@ -6,33 +6,34 @@
                 background-color="#545c64"
                 text-color="#fff"
                 active-text-color="#ffd04b">
-            <div class="el-topbar-text-div"><span class="el-topbar-text-span">{{title}}</span></div>
-            <div class="el-topbar-button-row">
-                <el-button class="el-topbar-button" v-on:click="minimize" type="text" icon="el-icon-minus"
-                           circle></el-button>
-                <el-button class="el-topbar-button" v-on:click="windowing" v-show="isMaxmun" type="text"
-                           icon="el-icon-copy-document"
-                           circle></el-button>
-                <el-button class="el-topbar-button" v-on:click="maximize" v-show="!isMaxmun" type="text"
-                           icon="el-icon-full-screen"
-                           circle></el-button>
-                <el-button class="el-topbar-button" v-on:click="closeWin" type="text" icon="el-icon-close"
-                           circle></el-button>
-            </div>
+            <el-row justify="space-between" align="middle">
+                <el-col :span="6" :offset="9" class="el-topbar-text-col">
+                    <span class="el-topbar-text-span">{{title}}</span>
+                </el-col>
+                <el-col :span="4" class="el-topbar-button-col">
+                    <el-button class="el-topbar-button" v-on:click="minimize" type="text" icon="el-icon-minus"
+                               circle></el-button>
+                    <el-button class="el-topbar-button" v-on:click="windowing" v-show="isMaxmun" type="text"
+                               icon="el-icon-copy-document"
+                               circle></el-button>
+                    <el-button class="el-topbar-button" v-on:click="maximize" v-show="!isMaxmun" type="text"
+                               icon="el-icon-full-screen"
+                               circle></el-button>
+                    <el-button class="el-topbar-button" v-on:click="closeWin" type="text" icon="el-icon-close"
+                               circle></el-button>
+                </el-col>
+            </el-row>
         </el-menu>
     </div>
 </template>
 
 <style>
-    .el-topbar-text-div {
-        float: left;
-        position: relative;
-        left: 50%;
+    .el-topbar-text-col {
+        text-align: center;
     }
-    .el-topbar-text-span{
-        position: relative;
-        left: -50%;
-        line-height: 1.8;
+
+    .el-topbar-text-span {
+        line-height: 2;
         font-size: 20px;
         color: #C0C4CC;
     }
@@ -42,7 +43,7 @@
         height: auto;
     }
 
-    .el-topbar-button-row {
+    .el-topbar-button-col {
         float: right;
         -webkit-app-region: no-drag;
         text-align: right;
@@ -72,7 +73,7 @@
         data() {
             return {
                 isMaxmun: false,
-                title:document.title
+                title: document.title
             };
         },
         methods: {
