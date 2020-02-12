@@ -1,38 +1,15 @@
 <template>
     <div id="app">
-        <el-container>
-            <el-header class="el-header" style="height: auto">
-                <ElementNavTopBar/>
-            </el-header>
-
-            <el-container>
-                <el-aside width="auto">
-                    <ElementNavSlideBar :is-collapse="isc"/>
-                </el-aside>
-                <el-main>
-                    <router-link to="HelloWorld">HelloWorld</router-link>
-                    <router-view></router-view>
-                </el-main>
-            </el-container>
-        </el-container>
+        <router-view></router-view>
     </div>
 </template>
 
 <script>
-    import ElementNavTopBar from "./components/ElementNavTopBar";
-    import ElementNavSlideBar from './components/ElementNavSlideBar'
-
     export default {
         data() {
-            return {
-                isc: true
-            };
         },
         name: 'App',
-        components: {
-            ElementNavTopBar,
-            ElementNavSlideBar
-        },
+        components: {},
     }
 </script>
 
@@ -46,16 +23,12 @@
         /*margin-top: 60px;*/
     }
 
-    html, body, #app, .el-container {
+    html, body, #app{
         /*设置内部填充为0，几个布局元素之间没有间距*/
         padding: 0;
         /*外部间距也是如此设置*/
         margin: 0;
         /*统一设置高度为100%*/
         height: 100%;
-    }
-
-    .el-header {
-        padding: 0;
     }
 </style>

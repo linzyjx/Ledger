@@ -5,6 +5,9 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 import App from './App.vue';
 import HelloWorld from "./components/HelloWorld";
+import Main from "./components/Main";
+import MiniWindow from "./components/MiniWindow";
+import MiniWindowDemo1 from "./components/MiniWindowDemo1";
 
 
 Vue.config.productionTip = false;
@@ -12,21 +15,33 @@ Vue.use(VueRouter);
 Vue.use(ElementUI);
 
 let router = new VueRouter({
-    mode: 'history',
-    base: '/',
-    routes: [
-        {
-            path: '/app',
-            name: 'App',
-            component: App
-        },
-        {
-            path: '/HelloWorld',
-            name: 'HelloWorld',
-            component: HelloWorld
-        }
-    ]
-});
+        // mode: 'history',
+        base: '/',
+        routes: [
+            {
+                path: '/app',
+                name: 'app',
+                component: Main,
+                children: [{
+                    path: '/App/HelloWorld',
+                    name: 'HelloWorld',
+                    component: HelloWorld
+                }]
+            },
+            {
+                path: '/MiniWindow',
+                name: 'MiniWindow',
+                component: MiniWindow,
+                children: [
+                    {
+                        path: '/MiniWindow/Demo1',
+                        name: 'MiniWindowDemo1',
+                        component: MiniWindowDemo1
+                    }]
+            }
+        ]
+    })
+;
 
 let vm = new Vue({
     el: '#app',
