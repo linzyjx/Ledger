@@ -5,13 +5,13 @@ import {
     createProtocol,
     installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
+import * as Demo1 from "./js/MiniWindowDemo1";
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-let minWin;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: {secure: true, standard: true}}]);
@@ -49,18 +49,8 @@ function createMainWindow() {
         mainWindow.webContents.send('unmaximize');
     });
     createMenu();
-    // console.log(mainWindow);
-    createMinWindow('MiniWindow/Demo1');
-    // ipcMain.on('mini', (event, win) => {
-    //     // console.log('Window same test:');
-    //     // if (win === minWin) {
-    //     //     console.log('Window is same');
-    //     // } else {
-    //     //     console.log('Window not same');
-    //     //     console.log(win);
-    //     //     console.log(minWin);
-    //     // }
-    // })
+
+    Demo1.startWindow(mainWindow);
 }
 
 function createMenu() {
@@ -144,34 +134,47 @@ ipcMain.on('MainWindowsWindowing', () => mainWindow.unmaximize());
 ipcMain.on('MainWindowsMaximize', () => mainWindow.maximize());
 
 
-function createMinWindow(windowURI) {
-    // Menu.setApplicationMenu(null); // 关闭子窗口菜单栏
-// 使用hash对子页面跳转，这是vue的路由思想
-    minWin = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            nodeIntegration: true
-        },
-        frame: false,
-        parent: mainWindow // mainWindow是主窗口
-    });
+// function createMinWindow(windowURI) {
+//     // Menu.setApplicationMenu(null); // 关闭子窗口菜单栏
+// // 使用hash对子页面跳转，这是vue的路由思想
+//     minWin = new BrowserWindow({
+//         width: 800,
+//         height: 600,
+//         webPreferences: {
+//             nodeIntegration: true
+//         },
+//         frame: false,
+//         parent: mainWindow, // mainWindow是主窗口
+//     });
+//     ipcMain.on('win-111-init', (event) => {
+//         event.returnValue = {initarg: 1234};
+//     });
+//     if (process.env.WEBPACK_DEV_SERVER_URL) {
+//         // createProtocol('false');
+//         // Load the url of the dev server if in development mode
+//         minWin.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#' + windowURI)
+//             .then(() => {
+//                 console.log('Process Done.');
+//             }).catch(() => {
+//             ipcMain.removeListener('win-111-init');
+//             console.log(`MiniWin Create Error.`);
+//         });
+//         console.log(process.env.WEBPACK_DEV_SERVER_URL + windowURI);
+//         if (!process.env.IS_TEST) minWin.webContents.openDevTools();
+//     } else {
+//         createProtocol('app');
+//         // Load the index.html when not in development
+//         minWin.loadURL('app://./index.html/' + '#' + windowURI).then(() => {
+//             ipcMain.on('win-111-init', (event) => {
+//                 event.returnValue = {initarg: 1234};
+//             });
+//         });
+//     }
+//
+//     minWin.on('closed', () => {
+//         minWin = null
+//     });
+// }
 
-    if (process.env.WEBPACK_DEV_SERVER_URL) {
-        // createProtocol('false');
-        // Load the url of the dev server if in development mode
-        minWin.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#/' + windowURI);
-        console.log(process.env.WEBPACK_DEV_SERVER_URL + windowURI);
-        if (!process.env.IS_TEST) minWin.webContents.openDevTools()
-    } else {
-        createProtocol('app');
-        // Load the index.html when not in development
-        minWin.loadURL('app://./index.html/' + '#/' + windowURI)
-    }
-
-    minWin.on('closed', () => {
-        minWin = null
-    });
-}
 
 

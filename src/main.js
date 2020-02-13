@@ -34,7 +34,7 @@ let router = new VueRouter({
                 component: MiniWindow,
                 children: [
                     {
-                        path: '/MiniWindow/Demo1',
+                        path: '/MiniWindow/Demo1/:id',
                         name: 'MiniWindowDemo1',
                         component: MiniWindowDemo1
                     }]
