@@ -1,12 +1,12 @@
 <template>
     <el-container>
         <el-header class="el-header" style="height: auto">
-            <ElementNavTopBar/>
+            <MainWindowTopBar/>
         </el-header>
 
         <el-container>
             <el-aside width="auto">
-                <ElementNavSlideBar :is-collapse="isc"/>
+                <MainWindowSlideBar/>
             </el-aside>
             <el-main>
                 <router-link to="/App/HelloWorld">HelloWorld</router-link>
@@ -17,19 +17,18 @@
 </template>
 
 <script>
-    import ElementNavTopBar from "./ElementNavTopBar";
-    import ElementNavSlideBar from './ElementNavSlideBar'
+    import MainWindowTopBar from "./MainWindowTopBar";
+    import MainWindowSlideBar from './MainWindowSlideBar'
 
     export default {
         data() {
             return {
-                isc: true
             };
         },
         name: 'App',
         components: {
-            ElementNavTopBar,
-            ElementNavSlideBar
+            MainWindowTopBar,
+            MainWindowSlideBar
         },
     }
 </script>

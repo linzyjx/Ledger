@@ -5,7 +5,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 import App from './App.vue';
 import HelloWorld from "./components/HelloWorld";
-import Main from "./components/Main";
+import MainWindow from "./components/MainWindow";
 import MiniWindow from "./components/MiniWindow";
 import MiniWindowDemo1 from "./components/MiniWindowDemo1";
 
@@ -19,9 +19,9 @@ let router = new VueRouter({
         base: '/',
         routes: [
             {
-                path: '/app',
+                path: '/App',
                 name: 'app',
-                component: Main,
+                component: MainWindow,
                 children: [{
                     path: '/App/HelloWorld',
                     name: 'HelloWorld',

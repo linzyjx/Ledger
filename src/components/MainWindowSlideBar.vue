@@ -4,18 +4,18 @@
                  class="el-menu-vertical-demo"
                  @open="handleOpen"
                  @close="handleClose"
-                 router="true"
+                 router
                  :collapse="isCollapse"
                  style="height: 100%">
             <el-container style="height: 100%">
                 <el-main>
-                    <el-menu-item index="/App/App">
+                    <el-menu-item index="/App">
                         <i class="el-icon-menu"></i>
                         <span slot="title">App</span>
                     </el-menu-item>
                     <el-menu-item index="/App/HelloWorld">
                         <i class="el-icon-document"></i>
-                        <span slot="title">HelloWorld</span>
+                        <template slot="title">HelloWorld</template>
                     </el-menu-item>
                 </el-main>
                 <el-footer>
@@ -34,18 +34,23 @@
         width: 150px;
         min-height: 400px;
     }
+
     .sidebar::-webkit-scrollbar {
         width: 0;
     }
+
     .sidebar > ul {
         height: 100%;
     }
-    .sidebar .el-main{
+
+    .sidebar .el-main {
         padding: 0;
     }
-    .sidebar .el-footer{
+
+    .sidebar .el-footer {
         padding: 0;
     }
+
     /*隐藏收缩动画时出现的滚动条*/
     .el-main::-webkit-scrollbar {
         width: 0;
@@ -54,8 +59,11 @@
 
 <script>
     export default {
-        props: {
-            isCollapse: Boolean
+        props: {},
+        data() {
+            return {
+                isCollapse: true
+            }
         },
         methods: {
             handleOpen(key, keyPath) {
