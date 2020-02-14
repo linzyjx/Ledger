@@ -29,7 +29,7 @@ function createMiniWindow(windowBaseURI, windowOptions, windowData) {
             .then(() => {
                 console.log(`Mini Window ${newWindowId} Load Done.`);
             }).catch(() => {
-            ipcMain.removeListener(`win${newWindowId}Init`);
+            ipcMain.removeAllListeners(`win${newWindowId}Init`);
             console.log(`Mini Window ${newWindowId} Load Error.`);
             // 加载窗口失败，关闭窗口
             newWindow.close();
@@ -43,17 +43,22 @@ function createMiniWindow(windowBaseURI, windowOptions, windowData) {
             .then(() => {
                 console.log(`Mini Window ${newWindowId} Load Done.`);
             }).catch(() => {
-            ipcMain.removeListener(`win${newWindowId}Init`);
+            ipcMain.removeAllListeners(`win${newWindowId}Init`);
             console.log(`Mini Window ${newWindowId} Load Error.`);
             // 加载窗口失败，关闭窗口
             newWindow.close();
         });
     }
     newWindow.on('closed', () => {
-        newWindow.removeAllListeners(); //移除所有窗口监听器
-        ipcMain.removeListener(`win${newWindowId}Init`);
-        miniWindows.delete(newWindow); //从已关闭的窗口Set中移除引用
-        miniWindowsId.delete(newWindowId);
+        try {
+            ipcMain.removeAllListeners(`win${newWindowId}Init`);
+            miniWindows.delete(newWindow); //从已关闭的窗口Set中移除引用
+            miniWindowsId.delete(newWindowId);
+        } catch (e) {
+            console.log(e);
+            console.log('Error at newWindow.on')
+        }
+
     });
 
     miniWindows.add(newWindow);
