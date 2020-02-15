@@ -1,76 +1,16 @@
 'use strict';
 
-import {app, protocol, BrowserWindow, Menu, globalShortcut, ipcMain} from 'electron'
-import {
-    createProtocol,
-    installVueDevtools
-} from 'vue-cli-plugin-electron-builder/lib'
+import {app, protocol, globalShortcut} from 'electron'
+import {installVueDevtools} from 'vue-cli-plugin-electron-builder/lib'
+import {mainWindow, createMainWindow} from "./js/MainWindow";
+
 import * as Demo1 from "./js/MiniWindowDemo1";
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: {secure: true, standard: true}}]);
-
-function createMainWindow() {
-    // Create the browser window.
-    mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 720,
-        webPreferences: {
-            nodeIntegration: true
-        },
-        frame: false
-    });
-
-    if (process.env.WEBPACK_DEV_SERVER_URL) {
-        // Load the url of the dev server if in development mode
-        mainWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#/app');
-        if (!process.env.IS_TEST) mainWindow.webContents.openDevTools()
-    } else {
-        createProtocol('app');
-        // Load the index.html when not in development
-        mainWindow.loadURL('app://./index.html#/app')
-    }
-
-    mainWindow.on('closed', () => {
-        mainWindow = null
-    });
-
-    mainWindow.on('maximize', () => {
-        mainWindow.webContents.send('maximize');
-    });
-
-    mainWindow.on('unmaximize', () => {
-        mainWindow.webContents.send('unmaximize');
-    });
-    createMenu();
-
-    Demo1.startWindow(mainWindow);
-}
-
-function createMenu() {
-    if (process.platform === 'darwin') {    //Mac: save 'about' and 'quit'
-        const template = [
-            {
-                label: 'App Demo',
-                submenu: [
-                    {role: 'about'},
-                    {role: 'quit'}
-                ]
-            }
-        ];
-        let menu = Menu.buildFromTemplate(template);
-        Menu.setApplicationMenu(menu);
-    } else {
-        //Win and Linus
-        Menu.setApplicationMenu(null);
-    }
-}
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -109,7 +49,8 @@ app.on('ready', async () => {
             mainWindow.webContents.openDevTools();
         })
     }
-    createMainWindow()
+    createMainWindow();
+    Demo1.startWindow();
 });
 
 // Exit cleanly on request from parent process in development mode.
@@ -126,55 +67,5 @@ if (isDevelopment) {
         })
     }
 }
-
-//执行窗口状态变更
-ipcMain.on('MainWindowsMinimize', () => mainWindow.minimize());
-ipcMain.on('MainWindowsClose', () => mainWindow.close());
-ipcMain.on('MainWindowsWindowing', () => mainWindow.unmaximize());
-ipcMain.on('MainWindowsMaximize', () => mainWindow.maximize());
-
-
-// function createMinWindow(windowURI) {
-//     // Menu.setApplicationMenu(null); // 关闭子窗口菜单栏
-// // 使用hash对子页面跳转，这是vue的路由思想
-//     minWin = new BrowserWindow({
-//         width: 800,
-//         height: 600,
-//         webPreferences: {
-//             nodeIntegration: true
-//         },
-//         frame: false,
-//         parent: mainWindow, // mainWindow是主窗口
-//     });
-//     ipcMain.on('win-111-init', (event) => {
-//         event.returnValue = {initarg: 1234};
-//     });
-//     if (process.env.WEBPACK_DEV_SERVER_URL) {
-//         // createProtocol('false');
-//         // Load the url of the dev server if in development mode
-//         minWin.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#' + windowURI)
-//             .then(() => {
-//                 console.log('Process Done.');
-//             }).catch(() => {
-//             ipcMain.removeListener('win-111-init');
-//             console.log(`MiniWin Create Error.`);
-//         });
-//         console.log(process.env.WEBPACK_DEV_SERVER_URL + windowURI);
-//         if (!process.env.IS_TEST) minWin.webContents.openDevTools();
-//     } else {
-//         createProtocol('app');
-//         // Load the index.html when not in development
-//         minWin.loadURL('app://./index.html/' + '#' + windowURI).then(() => {
-//             ipcMain.on('win-111-init', (event) => {
-//                 event.returnValue = {initarg: 1234};
-//             });
-//         });
-//     }
-//
-//     minWin.on('closed', () => {
-//         minWin = null
-//     });
-// }
-
 
 
