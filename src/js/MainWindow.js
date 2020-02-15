@@ -1,5 +1,6 @@
 import {BrowserWindow, Menu, ipcMain} from 'electron'
 import {createProtocol} from "vue-cli-plugin-electron-builder/lib";
+import {mainWindowInit} from "../ipc";
 
 let mainWindow;
 
@@ -26,6 +27,7 @@ function createMainWindow() {
     }
     createMenu();
     createListener();
+    mainWindowInit();
 }
 
 function createMenu() {

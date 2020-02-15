@@ -10,6 +10,7 @@
             </el-aside>
             <el-main>
                 <router-link to="/App/HelloWorld">HelloWorld</router-link>
+                <el-button v-on:click="setDemo1">Demo1</el-button>
                 <router-view></router-view>
             </el-main>
         </el-container>
@@ -17,6 +18,7 @@
 </template>
 
 <script>
+    import {ipcRenderer as ipc} from 'electron';
     import MainWindowTopBar from "./MainWindowTopBar";
     import MainWindowSlideBar from './MainWindowSlideBar'
 
@@ -30,6 +32,12 @@
             MainWindowTopBar,
             MainWindowSlideBar
         },
+        methods:{
+            setDemo1(){
+                ipc.send('WinDemo1Set');
+                console.log('aaa')
+            }
+        }
     }
 </script>
 

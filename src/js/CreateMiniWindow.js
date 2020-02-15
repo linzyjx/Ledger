@@ -35,7 +35,6 @@ function createMiniWindow(windowBaseURI, windowOptions, windowData) {
             newWindow.close();
         });
         console.log(process.env.WEBPACK_DEV_SERVER_URL + windowURI);
-        if (!process.env.IS_TEST) newWindow.webContents.openDevTools();
     } else {
         createProtocol('app');
         // Load the index.html when not in development

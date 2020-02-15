@@ -4,8 +4,6 @@ import {app, protocol, globalShortcut} from 'electron'
 import {installVueDevtools} from 'vue-cli-plugin-electron-builder/lib'
 import {mainWindow, createMainWindow} from "./js/MainWindow";
 
-import * as Demo1 from "./js/MiniWindowDemo1";
-
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 
@@ -50,7 +48,6 @@ app.on('ready', async () => {
         })
     }
     createMainWindow();
-    Demo1.startWindow();
 });
 
 // Exit cleanly on request from parent process in development mode.

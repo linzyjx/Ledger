@@ -15,7 +15,10 @@ function startWindow(mainWindow) {
     let miniWinData = {initarg: 1234};
     [minWin, minWinId] = createMiniWindow('/MiniWindow/Demo1/233?a=111', minWinOptions, miniWinData);
     console.log(`Get Window ID: ${minWinId}`);
-    minWin.show();
+    if (!process.env.IS_TEST) minWin.webContents.openDevTools();
+    minWin.once('ready-to-show', () => {
+        minWin.show();
+    });
 }
 
 export {startWindow};
