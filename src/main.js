@@ -5,9 +5,12 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 import App from './App.vue';
 import HelloWorld from "./components/HelloWorld";
-import MainWindow from "./components/MainWindow";
-import MiniWindow from "./components/MiniWindow";
-import MiniWindowDemo1 from "./components/MiniWindowDemo1";
+import MainWindow from "./components/Windows/MainWindow/MainWindow";
+import MiniWindow from "./components/Windows/MiniWindow/MiniWindow";
+import MiniWindowDemo1 from "./components/Windows/MiniWindow/MiniWindowDemo1";
+import AccountsList from "./components/AccountsList/AccountsList";
+import BillList from "./components/BillList/BillList";
+import BillListMain from "./components/BillList/BillListMain";
 
 
 Vue.config.productionTip = false;
@@ -22,11 +25,26 @@ let router = new VueRouter({
                 path: '/App',
                 name: 'app',
                 component: MainWindow,
-                children: [{
-                    path: '/App/HelloWorld',
-                    name: 'HelloWorld',
-                    component: HelloWorld
-                }]
+                children: [
+                    {
+                        path: '/App/AccountsList',
+                        name: 'AccountsList',
+                        component: AccountsList
+                    },
+                    {   path: '/App/BillList',
+                        name: 'BillList',
+                        component: BillList,
+                        children:[{
+                            path: '/App/BillList/Account/:id',
+                            name: 'BillListMain',
+                            component: BillListMain
+                        }]
+                    },
+                    {
+                        path: '/App/HelloWorld',
+                        name: 'HelloWorld',
+                        component: HelloWorld
+                    },]
             },
             {
                 path: '/MiniWindow',

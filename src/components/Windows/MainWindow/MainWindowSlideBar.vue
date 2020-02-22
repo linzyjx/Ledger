@@ -9,11 +9,11 @@
                  style="height: 100%">
             <el-container style="height: 100%">
                 <el-main>
-                    <el-menu-item index="/App">
+                    <el-menu-item index="/App/AccountsList">
                         <i class="el-icon-menu"></i>
                         <span slot="title">App</span>
                     </el-menu-item>
-                    <el-menu-item index="/App/HelloWorld">
+                    <el-menu-item index="/App/BillList">
                         <i class="el-icon-document"></i>
                         <template slot="title">HelloWorld</template>
                     </el-menu-item>

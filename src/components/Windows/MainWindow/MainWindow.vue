@@ -9,8 +9,8 @@
                 <MainWindowSlideBar/>
             </el-aside>
             <el-main>
-                <router-link to="/App/HelloWorld">HelloWorld</router-link>
-                <el-button v-on:click="setDemo1">Demo1</el-button>
+<!--                <router-link to="/App/HelloWorld">HelloWorld</router-link>-->
+<!--                <el-button v-on:click="setDemo1">Demo1</el-button>-->
                 <router-view></router-view>
             </el-main>
         </el-container>
@@ -60,7 +60,7 @@
         height: 100%;
     }
 
-    .el-header {
+    .el-header ,.el-main{
         padding: 0;
     }
 </style>
