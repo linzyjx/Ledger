@@ -1,5 +1,5 @@
 <template>
-    <el-container>
+    <el-container class="billlist-container">
         <el-aside width="350px">
             <el-container>
                 <el-main>
@@ -11,7 +11,7 @@
             </el-container>
         </el-aside>
         <el-container>
-            <el-main>
+            <el-main class="billlist-container-main">
                 <router-view/>
             </el-main>
         </el-container>
@@ -29,6 +29,11 @@
 </script>
 
 
-<style scoped>
-
+<style>
+    .billlist-container .el-main {
+        height: 100%;
+    }
+    .el-container,.el-main{
+        height: 100%;
+    }
 </style>

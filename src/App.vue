@@ -31,5 +31,7 @@
         margin: 0;
         /*统一设置高度为100%*/
         height: 100%;
+        /*禁止文字选中*/
+        -webkit-user-select:none;
     }
 </style>
