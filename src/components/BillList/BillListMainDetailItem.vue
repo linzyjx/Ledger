@@ -73,42 +73,28 @@
                 this.$store.commit({type: "showDialog"});
             },
             sqliteTest() {
-                const {Sequelize, Model} = require('sequelize');
+                const {Sequelize, Model, DataTypes} = require('sequelize');
                 const sequelize = new Sequelize('sqlite::memory:');
 
                 class User extends Model {
                 }
 
                 User.init({
-                    // 属性
-                    firstName: {
-                        type: Sequelize.STRING,
-                        allowNull: false
-                    },
-                    lastName: {
-                        type: Sequelize.STRING
-                        // allowNull 默认为 true
-                    }
-                }, {
-                    sequelize,
-                    modelName: 'user'
-                    // 参数
-                });
+                    username: DataTypes.STRING,
+                    birthday: DataTypes.DATE
+                }, {sequelize, modelName: 'user'});
 
                 sequelize.sync()
-                    .then(() => {
-                        User.create({
-                            firstName: 'janedoe',
-                            lastName: 'aaa'
-                        });
-                        console.log('aaa');
-                    })
+                    .then(() => User.create({
+                        username: 'janedoe',
+                        birthday: new Date(1980, 6, 20)
+                    }))
                     .then(jane => {
                         console.log(jane.toJSON());
                     });
             }
-        }
-        ,
+
+        },
         computed: {}
     }
 </script>
