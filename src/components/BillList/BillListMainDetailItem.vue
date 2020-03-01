@@ -30,7 +30,7 @@
             </el-col>
             <el-col :span="6" :offset="10">
                 <el-button size="small" @click="showDialog">aaa</el-button>
-                <el-button size="small">bbb</el-button>
+                <el-button size="small" @click="sqliteTest">bbb</el-button>
             </el-col>
         </el-row>
         <BillListMainDetailItemEditor/>
@@ -70,7 +70,42 @@
                 // console.log(window.getComputedStyle(this.$refs.detailitem).height);
             },
             showDialog() {
-                this.$store.commit({ type: "showDialog" });
+                this.$store.commit({type: "showDialog"});
+            },
+            sqliteTest() {
+                const {Sequelize, Model} = require('sequelize');
+                const sequelize = new Sequelize('sqlite::memory:');
+
+                class User extends Model {
+                }
+
+                User.init({
+                    // 属性
+                    firstName: {
+                        type: Sequelize.STRING,
+                        allowNull: false
+                    },
+                    lastName: {
+                        type: Sequelize.STRING
+                        // allowNull 默认为 true
+                    }
+                }, {
+                    sequelize,
+                    modelName: 'user'
+                    // 参数
+                });
+
+                sequelize.sync()
+                    .then(() => {
+                        User.create({
+                            firstName: 'janedoe',
+                            lastName: 'aaa'
+                        });
+                        console.log('aaa');
+                    })
+                    .then(jane => {
+                        console.log(jane.toJSON());
+                    });
             }
         }
         ,
