@@ -50,7 +50,7 @@
 
 <style scoped>
     .accounts-list-card-group-color-marker{
-        height: 200%;
+        height: 300%;
         float: left;
         position: absolute;
         width: 10px;

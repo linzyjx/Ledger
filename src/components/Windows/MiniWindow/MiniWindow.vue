@@ -15,9 +15,20 @@
 </template>
 
 <script>
+    const {ipcRenderer: ipc} = require('electron');
     import MiniWindowTopBar from "./MiniWindowTopBar";
 
     export default {
+        created() {
+            console.log(this.$route.params.id);
+            this.winid = this.$route.query.winid;
+            console.log(this.winid);
+            this.winData = ipc.sendSync(`win${this.winid}Init`);
+            console.log(this.winData.initarg);
+            ipc.on('RoutePush', ((event, url) => {
+                this.$router.push(url);
+            }));
+        },
         data() {
             return {
                 isc: true,

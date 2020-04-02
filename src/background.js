@@ -2,7 +2,7 @@
 
 import {app, protocol, globalShortcut} from 'electron'
 import {installVueDevtools} from 'vue-cli-plugin-electron-builder/lib'
-import {mainWindow, createMainWindow} from "./js/MainWindow";
+import {mainWindow,createMainWindow} from "./js/MainWindow";
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 

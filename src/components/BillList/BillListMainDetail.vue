@@ -4,15 +4,16 @@
             <ul class="billlist-main-detail-ul"
                 v-infinite-scroll="load"
                 :infinite-scroll-delay="100"
-                :infinite-scroll-distance="0"
+                :infinite-scroll-distance="20"
                 infinite-scroll-disabled="disabled"
                 style="overflow:auto;"
                 ref="tableWrapper"
             >
                 <li v-for="i in count" :key="i" class="billlist-main-detail-item">
-                    <BillListMainDetailItem :node="tradingData[i-1]" :id="i"/>
+                    <BillListMainDetailItem :node="tradingData[i-1]" :id="tradingData[i-1].id"/>
                 </li>
                 <p v-if="noMore">没有更多了</p>
+                <el-button @click="updateData">click</el-button>
             </ul>
         </el-collapse>
     </div>
@@ -20,18 +21,32 @@
 
 <script>
     import * as AccountListData from "../../testdata/AccountListData";
-    import * as BillListDetailData from "../../testdata/BillListDetailData";
+    // import * as BillListDetailData from "../../testdata/BillListDetailData";
     import BillListMainDetailItem from "./BillListMainDetailItem";
+    // import SQL from "sql-template-strings";
+    // import sqlite from "sqlite";
+    // import sqlite3 from 'sqlite3';
+    // import SQL from "sql-template-strings";
+    import {getBilllistDataByAccountId} from '@/js/RendererDB';
+    import {ipcRenderer as ipc} from 'electron';
 
     export default {
         name: "BillListMainDetail",
         components: {BillListMainDetailItem},
         mounted() {
+            this.getData();
+            ipc.on('updateBillDetail',()=>{
+                this.updateData();
+                console.log('updateBillListMainDetail');
+            })
         },
+        // beforeUpdate() {
+        //     this.getData();
+        // },
         data() {
             return {
                 count: 0,
-                tradingData: BillListDetailData.data
+                tradingData: {}
             }
         },
 
@@ -51,7 +66,26 @@
                 }
 
                 console.log(this.count);
+            },
+            async getData() {
+                // console.log(await getBilllistData(1));
+                this.tradingData = await getBilllistDataByAccountId(this.$route.params.id);
+                console.log('open:', this.$route.params.id, this.tradingData);
+                this.count = 0;
+                // let db1 = await sqlite.open('C:\\Users\\linzyjx\\AppData\\Roaming\\DemoAPP\\example.db', {
+                //     mode: sqlite3.OPEN_READONLY
+                // });
+                // console.log(db1);
+                // let accountId=1;
+                // this.tradingData = await db.all(SQL`SELECT * FROM bill_list ORDER BY time DESC`);
+                // db.close();
+            },
+            async updateData() {
+                // console.log(await getBilllistData(1));
+                this.tradingData = await getBilllistDataByAccountId(this.$route.params.id);
+                console.log('open:', this.$route.params.id, this.tradingData);
             }
+
         },
         computed: {
             noMore() {
@@ -61,7 +95,13 @@
             disabled() {
                 return this.noMore
             }
-        }
+        },
+        watch: {
+            $route() {
+                this.id = this.$route.query.id; //获取传来的参数
+                this.getData(); //路由变化时就重新执行这个方法 更新传来的参数
+            }
+        },
     }
 </script>
 

@@ -9,7 +9,10 @@ import App from './App.vue';
 import HelloWorld from "./components/HelloWorld";
 import MainWindow from "./components/Windows/MainWindow/MainWindow";
 import MiniWindow from "./components/Windows/MiniWindow/MiniWindow";
-import MiniWindowDemo1 from "./components/Windows/MiniWindow/MiniWindowDemo1";
+// import MiniWindowDemo1 from "./components/Windows/MiniWindow/MiniWindowDemo1";
+import MiniWindowHome from "./components/Windows/MiniWindow/MiniWindowHome";
+import BillListItemEditor from "./components/BillList/MiniWindow/DetailItemEditor";
+
 import AccountsList from "./components/AccountsList/AccountsList";
 import BillList from "./components/BillList/BillList";
 import BillListMain from "./components/BillList/BillListMain";
@@ -18,6 +21,9 @@ import BillListMain from "./components/BillList/BillListMain";
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
 Vue.use(ElementUI);
+
+const isDev = process.env.NODE_ENV !== "production";
+Vue.config.performance = isDev;
 
 const router = new VueRouter({
         // mode: 'history',
@@ -33,10 +39,11 @@ const router = new VueRouter({
                         name: 'AccountsList',
                         component: AccountsList
                     },
-                    {   path: '/App/BillList',
+                    {
+                        path: '/App/BillList',
                         name: 'BillList',
                         component: BillList,
-                        children:[{
+                        children: [{
                             path: '/App/BillList/Account/:id',
                             name: 'BillListMain',
                             component: BillListMain
@@ -54,9 +61,14 @@ const router = new VueRouter({
                 component: MiniWindow,
                 children: [
                     {
-                        path: '/MiniWindow/Demo1/:id',
-                        name: 'MiniWindowDemo1',
-                        component: MiniWindowDemo1
+                        path: '/MiniWindow/Home',
+                        name:'MiniWondowHome',
+                        component: MiniWindowHome
+                    },
+                    {
+                        path: '/MiniWindow/BillItemEditor/:id',
+                        name: 'BillItemEditor',
+                        component: BillListItemEditor
                     }]
             }
         ]
@@ -72,3 +84,5 @@ let vm = new Vue({
 
 // eslint-disable-next-line no-console
 console.log('aaa', vm.$data.msg);
+
+window

@@ -93,7 +93,8 @@
                 // ipc.send('MainWindowsMaximize');
             },
             closeWin() {
-                currentWindow.close();
+                currentWindow.hide();
+                this.$router.push(`/MiniWindow/`);
                 // ipc.send('MainWindowsClose');
             },
             handleSelect(key, keyPath) {

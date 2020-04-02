@@ -31,11 +31,18 @@
     import AccountsListCardTypeGroup from "./AccountsListCardTypeGroup";
     import AccountsListCardTypeAccount from "./AccountsListCardTypeAccount";
     import * as AccountListData from "../../testdata/AccountListData";
+    import {getAccountListData} from '@/js/RendererDB';
+    // import {ipcRenderer as ipc} from 'electron';
 
     export default {
         components: {AccountsListCardTypeAccount, AccountsListCardTypeGroup},
+        mounted() {
+            this.loadAccountListData();
+        },
         data() {
-            return AccountListData.data;
+            return {
+                data: AccountListData.data.data
+            };
         },
         methods: {
             handleDragStart(node) {
@@ -77,7 +84,13 @@
                 // console.log(node.isCurrent);
                 if (parseInt(data.id) !== parseInt(this.$route.params.id)) {
                     this.$router.push(`/App/BillList/Account/${data.id}`);
+                    // ipc.send('RoutePush',`/MiniWindow/Demo1/${data.id}?a=111`);
+                    console.log('send RoutePush');
                 }
+            },
+            async loadAccountListData() {
+                this.data = await getAccountListData();
+                console.log(this.data);
             }
         }
     };

@@ -1,8 +1,9 @@
-import {BrowserWindow, Menu, ipcMain} from 'electron'
+import {BrowserWindow, Menu, MenuItem, ipcMain} from 'electron'
 import {createProtocol} from "vue-cli-plugin-electron-builder/lib";
 import {mainWindowInit} from "../ipc";
 
 let mainWindow;
+const shortcutMenu = new Menu();
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -19,7 +20,7 @@ function createMainWindow() {
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
         mainWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#/app');
-        if (!process.env.IS_TEST) mainWindow.webContents.openDevTools()
+        if (!process.env.IS_TEST) mainWindow.webContents.openDevTools();
     } else {
         createProtocol('app');
         // Load the index.html when not in development
@@ -45,8 +46,15 @@ function createMenu() {
         Menu.setApplicationMenu(menu);
     } else {
         //Win and Linus
-        Menu.setApplicationMenu(null);
+        // Menu.setApplicationMenu(null);
     }
+
+    shortcutMenu.append(new MenuItem({
+        label: 'DevTools',
+        accelerator: 'CmdOrCtrl+F12',
+        click: () => { mainWindow.webContents.openDevTools()}
+    }));
+    Menu.setApplicationMenu(shortcutMenu);
 }
 
 function createListener() {

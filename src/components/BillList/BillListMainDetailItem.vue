@@ -9,7 +9,7 @@
                     <el-col :span="13">
                         <div class="billlist-main-detail-item-text">
                             <div class="name bond">{{node.name}}</div>
-                            <div>{{node.time}}</div>
+                            <div>{{(new Date(node.time*1000)).Format('yyyy年M月d日 h:m')}}</div>
                         </div>
                     </el-col>
                     <el-col :span="4" class="billlist-main-detail-item-num bond">
@@ -30,19 +30,23 @@
             </el-col>
             <el-col :span="6" :offset="10">
                 <el-button size="small" @click="showDialog">aaa</el-button>
-                <el-button size="small" @click="sqliteTest">bbb</el-button>
+                <el-button size="small" @click="openEditor">bbb</el-button>
             </el-col>
         </el-row>
-        <BillListMainDetailItemEditor/>
+<!--        <BillListMainDetailItemEditor/>-->
     </el-collapse-item>
     <!--    </div>-->
 </template>
 
 <script>
-    import BillListMainDetailItemEditor from "./BillListMainDetailItemEditor";
+    // import BillListMainDetailItemEditor from "./BillListMainDetailItemEditor";
+    import {ipcRenderer as ipc} from 'electron';
+    import sqlite from "sqlite";
+    import SQL from "sql-template-strings";
+    // import db from '@/js/RendererDB';
 
     export default {
-        components: {BillListMainDetailItemEditor},
+        components: {},
         mounted() {
             // this.colorMarkerHeight = window.getComputedStyle(this.$refs.detailitem).height;
             // console.log('aaa');
@@ -69,33 +73,71 @@
             aaa() {
                 // console.log(window.getComputedStyle(this.$refs.detailitem).height);
             },
-            showDialog() {
-                this.$store.commit({type: "showDialog"});
+            async showDialog() {
+                // this.$store.commit({type: "showDialog"});
+                var db = await sqlite.open(':memory:');
+                await db.run(SQL`CREATE TABLE lorem (info TEXT)`);
+                var stmt = await db.prepare("INSERT INTO lorem VALUES (?)");
+                try {
+                    console.log('aaa');
+                    stmt.run("Ipsum " + 5);
+                } catch (e) {
+                    console.log('111:' + e);
+                }
+                await db.each("SELECT rowid AS id, info FROM lorem").then((row) => {
+                    console.log(row.id + ": " + row.info);
+                    return row;
+                }).then((row) => {
+                    alert(row.id + ": " + row.info)
+                })
+                    .catch(err => {
+                        console.log('444' + err)
+                    });
+                await db.close().catch((e) => {
+                    console.log('222:' + e);
+                });
             },
             sqliteTest() {
-                const {Sequelize, Model, DataTypes} = require('sequelize');
-                const sequelize = new Sequelize('sqlite::memory:');
-
-                class User extends Model {
-                }
-
-                User.init({
-                    username: DataTypes.STRING,
-                    birthday: DataTypes.DATE
-                }, {sequelize, modelName: 'user'});
-
-                sequelize.sync()
-                    .then(() => User.create({
-                        username: 'janedoe',
-                        birthday: new Date(1980, 6, 20)
-                    }))
-                    .then(jane => {
-                        console.log(jane.toJSON());
-                    });
+                // db();
+                ipc.send('sqliteTest');
+                ipc.on('aaa', (event, result) => {
+                    alert(result);
+                })
+            },
+            openEditor(){
+                console.log('send RoutePush');
+                ipc.send('RoutePush',`/MiniWindow/BillItemEditor/${this.node.id}?a=111`);
             }
 
         },
         computed: {}
+    }
+    //格式化日期
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "y+": this.getFullYear(),
+            "M+": this.getMonth() + 1,                 //月份
+            "d+": this.getDate(),                    //日
+            "h+": this.getHours(),                   //小时
+            "m+": this.getMinutes(),                 //分
+            "s+": this.getSeconds(),                 //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S+": this.getMilliseconds()             //毫秒
+        };
+        for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                if (k == "y+") {
+                    fmt = fmt.replace(RegExp.$1, ("" + o[k]).substr(4 - RegExp.$1.length));
+                } else if (k == "S+") {
+                    var lens = RegExp.$1.length;
+                    lens = lens == 1 ? 3 : lens;
+                    fmt = fmt.replace(RegExp.$1, ("00" + o[k]).substr(("" + o[k]).length - 1, lens));
+                } else {
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                }
+            }
+        }
+        return fmt;
     }
 </script>
 

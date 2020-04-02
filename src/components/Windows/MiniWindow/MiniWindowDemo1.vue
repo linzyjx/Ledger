@@ -1,16 +1,17 @@
 <template>
     <div>
-        <span>MiniDemo2</span>
+        <span>MiniDemo2:{{this.$route.params.id}}</span>
         <el-button type="primary" v-on:click="sayHi">主要按钮</el-button>
     </div>
-
 </template>
 
 <script>
-    const {ipcRenderer: ipc} = require('electron');
     // 子窗口内容模板
     export default {
         name: "MiniWindowDemo1",
+        created() {
+            this.init();
+        },
         data() {
             return {
                 initData: {
@@ -21,20 +22,13 @@
                 },
             }
         },
-        created() {
-            this.init();
-            console.log(this.$route.params.id);
-            this.winid = this.$route.query.winid;
-            console.log(this.winid);
-            this.winData = ipc.sendSync(`win${this.winid}Init`);
-            console.log(this.winData.initarg);
-        },
+
         methods: {
             init() {
                 this.$emit('init', this.initData);
             },
             sayHi: function () {
-                alert('Hi!('+this.winData.initarg+')');
+                alert('Hi!(' + this.winData.initarg + ')');
             }
         }
     }
