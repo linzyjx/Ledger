@@ -6,9 +6,9 @@ import {loadReadDBFile} from '../index'
 async function getBilllistDataByAccountId(accountId) {
     let db = await loadReadDBFile();
     if (Number(accountId) === 0) {
-        return await db.all(SQL`SELECT * FROM bill_list ORDER BY time DESC`);
+        return await db.all(SQL`SELECT * FROM bill_list ORDER BY time ASC`);
     } else {
-        return await db.all(SQL`SELECT * FROM bill_list WHERE account=${accountId} ORDER BY time DESC`);
+        return await db.all(SQL`SELECT * FROM bill_list WHERE account=${accountId} ORDER BY time ASC`);
     }
 
 }

@@ -10,7 +10,7 @@ import sqlite from 'sqlite';
 import sqlite3 from 'sqlite3';
 
 import {startWindow} from './js/BackGroundMiniWindow';
-import {updateDetailItem, addDetailItem} from './js/db/MainDB';
+import {updateDetailItem, addDetailItem, deleteDetailItem} from './js/db/MainDB';
 
 // 主窗口创建时
 function mainWindowInit() {
@@ -27,6 +27,11 @@ function mainWindowInit() {
 
     ipcMain.on('addDetailItem', (e, data) => {
         addDetailItem(data).then(() => {
+            mainWindow.webContents.send('updateBillDetail');
+        });
+    });
+    ipcMain.on('delDetailItem', (e, id) => {
+        deleteDetailItem(id).then(() => {
             mainWindow.webContents.send('updateBillDetail');
         });
     });

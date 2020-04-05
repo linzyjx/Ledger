@@ -9,7 +9,7 @@
                     <el-col :span="13">
                         <div class="billlist-main-detail-item-text">
                             <div class="name bond">{{node.name}}</div>
-                            <div>{{(new Date(node.time*1000)).Format('yyyy年M月d日 h:m')}}</div>
+                            <div>{{(new Date(node.time*1000)).Format('yyyy年M月d日 hh:mm')}}</div>
                         </div>
                     </el-col>
                     <el-col :span="4" class="billlist-main-detail-item-num bond">
@@ -23,17 +23,27 @@
             </div>
             <!--                <div class="color-marker" :style="{height:colorMarkerHeight}"></div>-->
         </template>
-        <el-row>
+        <el-row type="flex" align="middle">
             <el-col :span="6" :offset="2">
-                <div>商家：</div>
+                <div>商家：{{node.party_name}}</div>
                 <div>类别：</div>
             </el-col>
             <el-col :span="6" :offset="10">
-                <el-button size="small" @click="showDialog">aaa</el-button>
-                <el-button size="small" @click="openEditor">bbb</el-button>
+                <el-popconfirm
+                        confirmButtonText='确认'
+                        cancelButtonText='取消'
+                        confirmButtonType="danger"
+                        icon="el-icon-info"
+                        iconColor="#F56C6C"
+                        title="确认删除这条账目吗？"
+                        @onConfirm="delItem"
+                >
+                    <el-button icon="el-icon-delete" slot="reference" size="small">删除</el-button>
+                </el-popconfirm>
+                <el-button icon="el-icon-edit" size="small" style="margin-left: 7px" @click="openEditor">修改</el-button>
             </el-col>
         </el-row>
-<!--        <BillListMainDetailItemEditor/>-->
+        <!--        <BillListMainDetailItemEditor/>-->
     </el-collapse-item>
     <!--    </div>-->
 </template>
@@ -43,6 +53,7 @@
     import {ipcRenderer as ipc} from 'electron';
     import sqlite from "sqlite";
     import SQL from "sql-template-strings";
+    // import Popconfirm from '@/components/utils/popconfirm/Popconfirm.vue';
     // import db from '@/js/db/RendererDB';
 
     export default {
@@ -104,9 +115,13 @@
                     alert(result);
                 })
             },
-            openEditor(){
+            openEditor() {
                 console.log('send RoutePush');
-                ipc.send('RoutePush',`/MiniWindow/BillItemEditor/${this.node.id}?a=111`);
+                ipc.send('RoutePush', `/MiniWindow/BillItemEditor/${this.node.id}?a=111`);
+            },
+            delItem() {
+                console.log('delete node:', this.node.id);
+                ipc.send('delDetailItem', this.node.id);
             }
 
         },

@@ -1,18 +1,18 @@
 <template>
     <div class="billlist-main-detail" style="height: 100%">
-        <el-collapse style="height: 100%" accordion v-if="tradingData.length!==0">
+        <el-collapse style="height: 100%" accordion v-if="(tradingData.length+countData.length)!==0">
             <ul class="billlist-main-detail-ul"
                 v-infinite-scroll="load"
-                :infinite-scroll-delay="100"
+                :infinite-scroll-delay="200"
                 :infinite-scroll-distance="0"
                 :infinite-scroll-disabled="disabled"
                 style="overflow:auto;"
             >
-                <li v-for="i in count" :key="i" class="billlist-main-detail-item">
-                    <BillListMainDetailItem :node="tradingData[i-1]" :id="tradingData[i-1].id"/>
+                <li v-for="node of countData" :key="node.id" class="billlist-main-detail-item">
+                    <BillListMainDetailItem :node="node" :id="node.id"/>
                 </li>
-                <p v-show="noMore">没有更多了</p>
-                <el-button @click="updateData">click</el-button>
+                <!--                <p v-show="noMore">没有更多了</p>-->
+                <!--                <el-button @click="updateData">click</el-button>-->
                 <bill-list-main-detail-add-button/>
             </ul>
         </el-collapse>
@@ -50,7 +50,7 @@
         // },
         data() {
             return {
-                count: 0,
+                countData: [],
                 tradingData: {}
             }
         },
@@ -64,31 +64,49 @@
                 return AccountListData.findNode(key, value);
             },
             load() {
-                if ((this.count + 10) > this.tradingData.length) {
-                    this.count = this.tradingData.length;
-                } else {
-                    this.count += 10;
+                for (let i = 0; i < 10 && this.tradingData.length > 0; i++) {
+                    this.countData.push(this.tradingData.pop());
                 }
-                console.log('load:', this.count);
+                console.log('load:', this.countData.length);
             },
             async getData() {
-                // console.log(await getBilllistData(1));
                 this.tradingData = await getBilllistDataByAccountId(this.$route.params.id);
+                //总账本重算余额
+                if (Number(this.$route.params.id) === 0) {
+                    let sum = 0;
+                    for (let item of this.tradingData) {
+                        sum += item.amount;
+                        item.balance = sum;
+                    }
+                }
+                let tempData = [];
+                console.log('getData:', this.$route.params.id);
+                for (let i in this.countData) {
+                    i;
+                    if (this.tradingData.length > 0) {
+                        tempData.push(this.tradingData.pop());
+                    }
+                }
+                this.countData = tempData;
+                if (!this.disabled) {
+                    this.load();
+                }
                 // console.log('open:', this.$route.params.id, this.tradingData);
                 // if (this.count > this.tradingData.length) this.count = this.tradingData.length;
             },
             async updateData() {
-                // console.log('updateData:',this.$route.params.id);
-                this.tradingData = await getBilllistDataByAccountId(this.$route.params.id);
-                // console.log('open:', this.$route.params.id, this.tradingData);
-                // if (this.count > this.tradingData.length) this.count = this.tradingData.length;
+                this.getData();
             }
 
         },
         computed: {
             noMore() {
-                console.log(this.count, this.tradingData.length, this.count >= this.tradingData.length);
-                return this.count >= this.tradingData.length;
+                // console.log(this.count, this.tradingData.length, this.count >= this.tradingData.length);
+                if (this.tradingData.length > 0) {
+                    return false;
+                } else {
+                    return true;
+                }
             },
             disabled() {
                 console.log(this.noMore);

@@ -1,6 +1,5 @@
 import SQL from 'sql-template-strings';
 import {getNearlyNewBillId, loadDBFile} from '../index'
-import el from "element-ui/src/locale/lang/el";
 
 async function updateDetailItem(id, type, changeData) {
     let db = await loadDBFile();
@@ -60,6 +59,23 @@ async function updateAnDetailItem(db, id, changeData) {
     if (firstFlag === false) return;
     query.append(SQL`WHERE id=${id}`);
     console.log(await db.run(query));
+}
+
+//删除账目
+async function deleteDetailItem(id) {
+    let db = await loadDBFile();
+    let freshBalanceID = new Set();
+    let data = await db.get(SQL`SELECT type,transfer_deal FROM bill_list where id=${id}`);
+    freshBalanceID.add(await getNearlyNewBillId(id));
+    if (data.type === 2) {
+        freshBalanceID.add(await getNearlyNewBillId(data.transfer_deal));
+        await db.run(SQL`DELETE FROM bill_list WHERE id=${data.transfer_deal}`);
+    }
+    await db.run(SQL`DELETE FROM bill_list WHERE id=${id}`);
+    for (let item of freshBalanceID) {
+        if (item === undefined) continue;
+        await checkBalance(db, item);
+    }
 }
 
 //新增账目
@@ -128,6 +144,6 @@ where t1.id = t2.id`;
 }
 
 
-export {updateDetailItem, addDetailItem}
+export {updateDetailItem, addDetailItem, deleteDetailItem}
 
 
