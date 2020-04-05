@@ -31,7 +31,7 @@
     import AccountsListCardTypeGroup from "./AccountsListCardTypeGroup";
     import AccountsListCardTypeAccount from "./AccountsListCardTypeAccount";
     import * as AccountListData from "../../testdata/AccountListData";
-    import {getAccountListData} from '@/js/RendererDB';
+    import {getAccountListData} from '@/js/db/RendererDB';
     // import {ipcRenderer as ipc} from 'electron';
 
     export default {

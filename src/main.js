@@ -12,6 +12,7 @@ import MiniWindow from "./components/Windows/MiniWindow/MiniWindow";
 // import MiniWindowDemo1 from "./components/Windows/MiniWindow/MiniWindowDemo1";
 import MiniWindowHome from "./components/Windows/MiniWindow/MiniWindowHome";
 import BillListItemEditor from "./components/BillList/MiniWindow/DetailItemEditor";
+import BillListItemAdder from "./components/BillList/MiniWindow/DetailItemAdder";
 
 import AccountsList from "./components/AccountsList/AccountsList";
 import BillList from "./components/BillList/BillList";
@@ -69,7 +70,13 @@ const router = new VueRouter({
                         path: '/MiniWindow/BillItemEditor/:id',
                         name: 'BillItemEditor',
                         component: BillListItemEditor
-                    }]
+                    },
+                    {
+                        path: '/MiniWindow/BillItemAdder/:type',
+                        name: 'BillItemAdder',
+                        component: BillListItemAdder
+                    }
+                ]
             }
         ]
     })

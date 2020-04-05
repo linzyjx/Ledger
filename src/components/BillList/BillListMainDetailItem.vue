@@ -43,7 +43,7 @@
     import {ipcRenderer as ipc} from 'electron';
     import sqlite from "sqlite";
     import SQL from "sql-template-strings";
-    // import db from '@/js/RendererDB';
+    // import db from '@/js/db/RendererDB';
 
     export default {
         components: {},

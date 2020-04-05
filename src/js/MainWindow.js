@@ -19,12 +19,12 @@ function createMainWindow() {
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
-        mainWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#/app');
+        mainWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#/App/BillList/Account/0');
         if (!process.env.IS_TEST) mainWindow.webContents.openDevTools();
     } else {
         createProtocol('app');
         // Load the index.html when not in development
-        mainWindow.loadURL('app://./index.html#/app')
+        mainWindow.loadURL('app://./index.html#/App/BillList/Account/0')
     }
     createMenu();
     createListener();

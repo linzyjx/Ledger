@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <el-header>
+        <el-header height="50px">
             <BillListMainDetailFilter/>
         </el-header>
         <el-main>
@@ -18,6 +18,6 @@
     }
 </script>
 
-<style scoped>
+<style>
 
 </style>

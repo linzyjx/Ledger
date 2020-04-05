@@ -7,8 +7,8 @@ let minWin, minWinId;
 
 function startWindow(mainWindow) {
     let minWinOptions = {
-        width: 600,
-        height: 800,
+        width: 500,
+        height: 600,
         show: false,
         webPreferences: {
             nodeIntegration: true
@@ -24,7 +24,7 @@ function startWindow(mainWindow) {
     ipcListener('aa');
     if (!process.env.IS_TEST) minWin.webContents.openDevTools();
     minWin.once('ready-to-show', () => {
-        minWin.show();
+        // minWin.show();
     });
 }
 

@@ -1,21 +1,25 @@
 <template>
     <div class="billlist-main-detail" style="height: 100%">
-        <el-collapse style="height: 100%" accordion>
+        <el-collapse style="height: 100%" accordion v-if="tradingData.length!==0">
             <ul class="billlist-main-detail-ul"
                 v-infinite-scroll="load"
                 :infinite-scroll-delay="100"
-                :infinite-scroll-distance="20"
-                infinite-scroll-disabled="disabled"
+                :infinite-scroll-distance="0"
+                :infinite-scroll-disabled="disabled"
                 style="overflow:auto;"
-                ref="tableWrapper"
             >
                 <li v-for="i in count" :key="i" class="billlist-main-detail-item">
                     <BillListMainDetailItem :node="tradingData[i-1]" :id="tradingData[i-1].id"/>
                 </li>
-                <p v-if="noMore">没有更多了</p>
+                <p v-show="noMore">没有更多了</p>
                 <el-button @click="updateData">click</el-button>
+                <bill-list-main-detail-add-button/>
             </ul>
         </el-collapse>
+        <div v-else>
+            还没有数据
+            <bill-list-main-detail-add-button/>
+        </div>
     </div>
 </template>
 
@@ -27,15 +31,16 @@
     // import sqlite from "sqlite";
     // import sqlite3 from 'sqlite3';
     // import SQL from "sql-template-strings";
-    import {getBilllistDataByAccountId} from '@/js/RendererDB';
+    import {getBilllistDataByAccountId} from '@/js/db/RendererDB';
     import {ipcRenderer as ipc} from 'electron';
+    import BillListMainDetailAddButton from "./BillListMainDetailAddButton";
 
     export default {
         name: "BillListMainDetail",
-        components: {BillListMainDetailItem},
+        components: {BillListMainDetailAddButton, BillListMainDetailItem},
         mounted() {
             this.getData();
-            ipc.on('updateBillDetail',()=>{
+            ipc.on('updateBillDetail', () => {
                 this.updateData();
                 console.log('updateBillListMainDetail');
             })
@@ -64,36 +69,30 @@
                 } else {
                     this.count += 10;
                 }
-
-                console.log(this.count);
+                console.log('load:', this.count);
             },
             async getData() {
                 // console.log(await getBilllistData(1));
                 this.tradingData = await getBilllistDataByAccountId(this.$route.params.id);
-                console.log('open:', this.$route.params.id, this.tradingData);
-                this.count = 0;
-                // let db1 = await sqlite.open('C:\\Users\\linzyjx\\AppData\\Roaming\\DemoAPP\\example.db', {
-                //     mode: sqlite3.OPEN_READONLY
-                // });
-                // console.log(db1);
-                // let accountId=1;
-                // this.tradingData = await db.all(SQL`SELECT * FROM bill_list ORDER BY time DESC`);
-                // db.close();
+                // console.log('open:', this.$route.params.id, this.tradingData);
+                // if (this.count > this.tradingData.length) this.count = this.tradingData.length;
             },
             async updateData() {
-                // console.log(await getBilllistData(1));
+                // console.log('updateData:',this.$route.params.id);
                 this.tradingData = await getBilllistDataByAccountId(this.$route.params.id);
-                console.log('open:', this.$route.params.id, this.tradingData);
+                // console.log('open:', this.$route.params.id, this.tradingData);
+                // if (this.count > this.tradingData.length) this.count = this.tradingData.length;
             }
 
         },
         computed: {
             noMore() {
-                console.log(this.count, this.tradingData.length);
+                console.log(this.count, this.tradingData.length, this.count >= this.tradingData.length);
                 return this.count >= this.tradingData.length;
             },
             disabled() {
-                return this.noMore
+                console.log(this.noMore);
+                return this.noMore;
             }
         },
         watch: {
@@ -102,6 +101,21 @@
                 this.getData(); //路由变化时就重新执行这个方法 更新传来的参数
             }
         },
+        beforeRouteEnter(to, from, next) {
+            // 在渲染该组件的对应路由被 confirm 前调用
+            // 不！能！获取组件实例 `this`
+            // 因为当守卫执行前，组件实例还没被创建
+            next((vm) => {
+                console.log('beforeRouteEnter');
+                vm.getData();
+            })
+        },
+        beforeRouteUpdate(to, from, next) {
+            // just use `this`
+            console.log('beforeRouteUpdate');
+            this.getData();
+            next();
+        }
     }
 </script>
 
@@ -167,8 +181,9 @@
     .billlist-main-detail .el-collapse-item__arrow {
         display: none;
     }
-</style>
 
+
+</style>
 <style scoped>
     .billlist-main-detail-item-title {
         height: 100%;

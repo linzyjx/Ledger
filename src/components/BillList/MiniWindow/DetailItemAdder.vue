@@ -8,9 +8,11 @@
                     <el-radio-button :label="2">转账</el-radio-button>
                 </el-radio-group>
             </div>
-            <AccountSelector :account="data.account" @change="data.account=$event" ref="account_selector"/>
-            <AccountSelector v-show="data.type===2" name="转入账户" :account="data.transfer_deal_account"
-                             @change="data.transfer_deal_account=$event" ref="transfer_deal_selector"/>
+            <AccountSelector :add-flag="true" :account="data.account" @change="data.account=$event"
+                             ref="account_selector"/>
+            <AccountSelector v-if="data.type===2" name="转入账户" :account="data.transfer_deal_account"
+                             ref="transfer_deal_selector"
+                             @change="data.transfer_deal_account=$event"/>
             <el-form-item label="名称">
                 <el-input v-model="data.name" @focus="focus($event)"></el-input>
             </el-form-item>
@@ -41,68 +43,93 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">确定</el-button>
+                <el-button type="primary" @click="sayHi">aa</el-button>
             </el-form-item>
         </el-form>
     </div>
 </template>
 
 <script>
-    import {getBilllistDataById} from '@/js/db/RendererDB';
+    import {getAccountList} from '@/js/db/RendererDB';
     import {ipcRenderer as ipc} from 'electron';
     import AccountSelector from "./AccountSelector";
     // 子窗口内容模板
     export default {
-        name: "BillListItemEditor",
+        name: "DetailAdder",
         components: {AccountSelector},
-        created() {
+        mounted() {
+            this.getAccountList();
+            if (Number(this.$route.params.type) === 0) {
+                this.data.name = '收入';
+            } else if (Number(this.$route.params.type) === 1) {
+                this.data.name = '支出';
+            }
+            console.log(this.data.name)
         },
         data() {
             return {
-                data: {},
+                data: {
+                    name,
+                    type: Number(this.$route.params.type),
+                    account: Number(this.$route.query.account),
+                    amount: 0,
+                    time: new Date(),
+                    transfer_deal_account: undefined
+                },
                 accountData: [],
                 rawData: {},
-                rules: {}
             }
         },
 
         methods: {
             sayHi: function () {
-                alert('Hi!(' + this.winData.initarg + ')');
+                // alert('Hi!(' + this.account + ')');
             },
             async getData() {
-                this.data = await getBilllistDataById(this.$route.params.id);
-                console.log('open:', this.$route.params.id, this.data);
-                if (this.data.type === 2) {
-                    if (this.data.amount > 0) {
-                        console.log('push to ', this.data.transfer_deal);
-                        this.$route.params.id = this.data.transfer_deal;
-                        this.data = await getBilllistDataById(this.$route.params.id);
-                        console.log('open:', this.$route.params.id, this.data);
-                    }
-                    this.data.amount = Math.abs(this.data.amount);
-                }
-                this.data.time = this.data.time * 1000;
+                // this.data = await getBilllistDataById(this.$route.params.id);
+                // console.log('open:', this.$route.params.id, this.data);
+                // console.log(this.$route.query.account);
                 // this.data=this.rawData;
-                this.rawData = {};
-                Object.assign(this.rawData, this.data);
+                // this.rawData = {};
+                // Object.assign(this.rawData, this.data);
             },
             onSubmit() {
-                console.log('onSubmit:', this.data, this.rawData);
-                //遍历不同值并提交
-                let changeData = {};
-                for (let rawItem of Object.keys(this.rawData)) {
-                    if (this.rawData[rawItem] !== this.data[rawItem]) {
-                        changeData[rawItem] = this.data[rawItem];
-                        if (rawItem === 'time') {
-                            changeData[rawItem] = changeData[rawItem] / 1000;
-                        }
+                console.log(this.data, this.rawData);
+                if (Number(this.data.account) === 0 || this.data.account === undefined) {
+                    this.$message({
+                        message: '未指定转出账户',
+                        type: 'error',
+                        offset: 50,
+                        duration: 2000,
+                        center: true
+                    });
+                    return;
+                }
+                if (this.data.type === 2) {
+                    if (this.data.transfer_deal_account === undefined) {
+                        this.$message({
+                            message: '未指定转入账户',
+                            type: 'error',
+                            offset: 50,
+                            duration: 2000,
+                            center: true
+                        });
+                        return;
                     }
                 }
-                if (Object.keys(changeData).length !== 0) {
-                    ipc.send('updateDetailItem', this.$route.params.id, this.data.type, changeData);
-                    console.log('onSubmit: send');
+                //直接提交有问题，拷贝一个副本
+                let changeData = {};
+                for (let rawItem of Object.keys(this.data)) {
+                    changeData[rawItem] = this.data[rawItem];
+                    if (rawItem === 'time') {
+                        changeData[rawItem] = Math.floor(changeData[rawItem] / 1000);
+                    }
                 }
-                console.log('changeData:', this.$route.params.id, changeData);
+                if (changeData.name === '') changeData = '交易';
+                if (changeData.type === 1) {
+                    changeData.amount *= -1.0
+                }
+                ipc.send('addDetailItem', changeData);
                 this.closeWin();
             },
             closeWin() {
@@ -112,9 +139,18 @@
                 this.$router.push(`/MiniWindow/`);
                 // ipc.send('MainWindowsClose');
             },
+            fetchData() {
+                // this.data.account = this.$route.query.account;
+                // this.data.type=Number(this.$route.params.type);
+                console.log(this.$route.query.account);
+            },
             focus(event) {
                 event.currentTarget.select();
             },
+            async getAccountList() {
+                this.accountList = await getAccountList();
+                console.log(this.accountList);
+            }
         },
         watch: {
             'data.transfer_deal_account': function (newVal, oldVal) {
@@ -131,6 +167,8 @@
                     });
                     return
                 }
+                this.data.name = `${this.accountList[this.data.account].name} 到 ${this.accountList[newVal].name} 的转账`;
+
             },
             'data.account': function (newVal, oldVal) {
                 if (newVal === this.data.transfer_deal_account) {
@@ -144,6 +182,9 @@
                         center: true
                     });
                     return
+                }
+                if (this.data.transfer_deal_account !== undefined) {
+                    this.data.name = `${this.accountList[newVal].name} 到 ${this.accountList[this.data.transfer_deal_account].name} 的转账`;
                 }
             }
         },
@@ -186,3 +227,4 @@
     }
 
 </style>
+

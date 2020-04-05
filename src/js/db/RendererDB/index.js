@@ -1,33 +1,40 @@
 import SQL from 'sql-template-strings';
-import sqlite from 'sqlite';
-import sqlite3 from 'sqlite3';
-import os from 'os';
-import path from 'path';
-// import ro from "element-ui/src/locale/lang/ro";
+import {loadReadDBFile} from '../index'
 
 // let DBFileSrc = os.homedir().toString() + '\\Roaming\\DemoAPP\\example.db';
-const DBFileSrc = path.resolve(os.homedir(), 'AppData', 'Roaming', 'DemoAPP', 'example.db');
-
-async function loadDBFile() {
-    return await sqlite.open(DBFileSrc, {
-        mode: sqlite3.OPEN_READONLY
-    }).catch(e => {
-        console.error(e, DBFileSrc);
-    });
-}
 
 async function getBilllistDataByAccountId(accountId) {
-    let db = await loadDBFile();
-    return await db.all(SQL`SELECT * FROM bill_list WHERE account=${accountId} ORDER BY time DESC`);
+    let db = await loadReadDBFile();
+    if (Number(accountId) === 0) {
+        return await db.all(SQL`SELECT * FROM bill_list ORDER BY time DESC`);
+    } else {
+        return await db.all(SQL`SELECT * FROM bill_list WHERE account=${accountId} ORDER BY time DESC`);
+    }
+
 }
 
 async function getBilllistDataById(id) {
-    let db = await loadDBFile();
-    return (await db.all(SQL`SELECT * FROM bill_list WHERE id=${id}`))[0];
+    let db = await loadReadDBFile();
+    let data = (await db.all(SQL`SELECT * FROM bill_list WHERE id=${id}`))[0];
+    if (data.type === 2) {
+        // console.log((await db.get(SQL`SELECT * FROM bill_list WHERE id=${data.id}`)));
+        data.transfer_deal_account = (await db.get(SQL`SELECT account FROM bill_list WHERE id=${data.transfer_deal}`)).account;
+    }
+    return data;
+}
+
+async function getAccountList() {
+    let db = await loadReadDBFile();
+    let rowData = await db.all(SQL`SELECT account_id as id, account_name as name FROM account_list WHERE account_type = 1`);
+    let output = {};
+    for (let item of rowData) {
+        output[item.id] = {id: item.id, name: item.name};
+    }
+    return output;
 }
 
 async function getAccountListData() {
-    let db = await loadDBFile();
+    let db = await loadReadDBFile();
     let rowData = await db.all(SQL`SELECT * FROM account_list`);
     for (let node of rowData) {
         node.account_children = JSON.parse(node.account_children);
@@ -68,6 +75,6 @@ function addAccountListNode(row, rowNode) {
     return nodeData;
 }
 
-export {getBilllistDataByAccountId, getBilllistDataById, getAccountListData}
+export {getBilllistDataByAccountId, getBilllistDataById, getAccountListData, getAccountList}
 
 
