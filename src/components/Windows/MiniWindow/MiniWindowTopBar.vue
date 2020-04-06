@@ -11,15 +11,15 @@
                     <span class="el-topbar-text-span">{{initData.title}}</span>
                 </el-col>
                 <el-col :span="4" class="el-topbar-button-col">
-                    <el-button class="el-topbar-button" v-on:click="minimize" v-show="initData.showMinimizeButton" type="text" icon="el-icon-minus"
+                    <el-button class="el-topbar-button" v-on:click="minimize" v-if="initData.showMinimizeButton" type="text" icon="el-icon-minus"
                                circle></el-button>
-                    <el-button class="el-topbar-button" v-on:click="windowing" v-show="(initData.showMaximizeButton && isMaxmun)" type="text"
+                    <el-button class="el-topbar-button" v-on:click="windowing" v-if="(initData.showMaximizeButton && isMaxmun)" type="text"
                                icon="el-icon-copy-document"
                                circle></el-button>
-                    <el-button class="el-topbar-button" v-on:click="maximize" v-show="(initData.showMaximizeButton &&!isMaxmun)" type="text"
+                    <el-button class="el-topbar-button" v-on:click="maximize" v-if="(initData.showMaximizeButton &&!isMaxmun)" type="text"
                                icon="el-icon-full-screen"
                                circle></el-button>
-                    <el-button class="el-topbar-button" v-on:click="closeWin" v-show="initData.showCloseButton" type="text" icon="el-icon-close"
+                    <el-button class="el-topbar-button" v-on:click="closeWin" v-if="initData.showCloseButton" type="text" icon="el-icon-close"
                                circle></el-button>
                 </el-col>
             </el-row>

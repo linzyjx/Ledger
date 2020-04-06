@@ -35,7 +35,11 @@ async function getAccountList() {
 
 async function getAccountListData() {
     let db = await loadReadDBFile();
-    let rowData = await db.all(SQL`SELECT * FROM account_list`);
+    let rowData = await db.all(SQL`SELECT account_list.*, ifnull(bl.balance, 0) as account_balance
+FROM account_list
+         LEFT JOIN (select account, (cast((sum(amount) * 1000) as integer) / 1000.0) as balance
+                    from bill_list
+                    group by account) bl on account_list.account_id = bl.account;`);
     for (let node of rowData) {
         node.account_children = JSON.parse(node.account_children);
     }
@@ -63,7 +67,8 @@ function addAccountListNode(row, rowNode) {
         id: rowNode.account_id,
         label: rowNode.account_name,
         type: ((rowNode.account_type == 0) ? 'group' : 'account'),
-        color: '#f56c6cbf'
+        color: '#f56c6cbf',
+        balance: rowNode.account_balance
     };
     if (rowNode.account_children !== null) {
         let childrenData = [];

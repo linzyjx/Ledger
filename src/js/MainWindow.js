@@ -52,7 +52,9 @@ function createMenu() {
     shortcutMenu.append(new MenuItem({
         label: 'DevTools',
         accelerator: 'CmdOrCtrl+F12',
-        click: () => { mainWindow.webContents.openDevTools()}
+        click: () => {
+            mainWindow.webContents.openDevTools();
+        }
     }));
     Menu.setApplicationMenu(shortcutMenu);
 }

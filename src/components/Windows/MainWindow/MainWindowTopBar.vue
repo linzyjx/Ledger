@@ -13,10 +13,10 @@
                 <el-col :span="4" class="el-topbar-button-col">
                     <el-button class="el-topbar-button" v-on:click="minimize" type="text" icon="el-icon-minus"
                                circle></el-button>
-                    <el-button class="el-topbar-button" v-on:click="windowing" v-show="isMaxmun" type="text"
+                    <el-button class="el-topbar-button" v-on:click="windowing" v-if="isMaxmun" type="text"
                                icon="el-icon-copy-document"
                                circle></el-button>
-                    <el-button class="el-topbar-button" v-on:click="maximize" v-show="!isMaxmun" type="text"
+                    <el-button class="el-topbar-button" v-on:click="maximize" v-if="!isMaxmun" type="text"
                                icon="el-icon-full-screen"
                                circle></el-button>
                     <el-button class="el-topbar-button" v-on:click="closeWin" type="text" icon="el-icon-close"

@@ -1,51 +1,52 @@
 <template>
-    <!--    <div ref="detailitem" style="">-->
-    <el-collapse-item :name="id" style="height: 100%;overflow: hidden">
-        <template slot="title" @change="aaa">
-            <div class="billlist-main-detail-item-title">
-                <el-row>
-                    <el-col :span="2" class="billlist-main-detail-item-icon"><i
-                            class="icon-background el-icon-s-grid"></i></el-col>
-                    <el-col :span="13">
-                        <div class="billlist-main-detail-item-text">
-                            <div class="name bond">{{node.name}}</div>
-                            <div>{{(new Date(node.time*1000)).Format('yyyy年M月d日 hh:mm')}}</div>
-                        </div>
-                    </el-col>
-                    <el-col :span="4" class="billlist-main-detail-item-num bond">
-                        {{parseFloat(node.amount).toFixed(2)}}
-                    </el-col>
-                    <el-col :span="4" class="billlist-main-detail-item-num bond">
-                        {{parseFloat(node.balance).toFixed(2)}}
-                    </el-col>
-                    <el-col :span="1"></el-col>
-                </el-row>
-            </div>
-            <!--                <div class="color-marker" :style="{height:colorMarkerHeight}"></div>-->
-        </template>
-        <el-row type="flex" align="middle">
-            <el-col :span="6" :offset="2">
-                <div>商家：{{node.party_name}}</div>
-                <div>类别：</div>
-            </el-col>
-            <el-col :span="6" :offset="10">
-                <el-popconfirm
-                        confirmButtonText='确认'
-                        cancelButtonText='取消'
-                        confirmButtonType="danger"
-                        icon="el-icon-info"
-                        iconColor="#F56C6C"
-                        title="确认删除这条账目吗？"
-                        @onConfirm="delItem"
-                >
-                    <el-button icon="el-icon-delete" slot="reference" size="small">删除</el-button>
-                </el-popconfirm>
-                <el-button icon="el-icon-edit" size="small" style="margin-left: 7px" @click="openEditor">修改</el-button>
-            </el-col>
-        </el-row>
-        <!--        <BillListMainDetailItemEditor/>-->
-    </el-collapse-item>
-    <!--    </div>-->
+    <div ref="detailitem" @contextmenu="handleContextMenu">
+        <el-collapse-item :name="id" style="height: 100%;overflow: hidden">
+            <template slot="title" @change="aaa">
+                <div class="billlist-main-detail-item-title">
+                    <el-row>
+                        <el-col :span="2" class="billlist-main-detail-item-icon"><i
+                                class="icon-background el-icon-s-grid"></i></el-col>
+                        <el-col :span="13">
+                            <div class="billlist-main-detail-item-text">
+                                <div class="name bond">{{node.name}}</div>
+                                <div>{{(new Date(node.time*1000)).Format('yyyy年M月d日 hh:mm')}}</div>
+                            </div>
+                        </el-col>
+                        <el-col :span="4" class="billlist-main-detail-item-num bond">
+                            {{parseFloat(node.amount).toFixed(2)}}
+                        </el-col>
+                        <el-col :span="4" class="billlist-main-detail-item-num bond">
+                            {{parseFloat(node.balance).toFixed(2)}}
+                        </el-col>
+                        <el-col :span="1"></el-col>
+                    </el-row>
+                </div>
+                <!--                <div class="color-marker" :style="{height:colorMarkerHeight}"></div>-->
+            </template>
+            <el-row type="flex" align="middle">
+                <el-col :span="6" :offset="2">
+                    <div>商家：{{node.party_name}}</div>
+                    <div>类别：</div>
+                </el-col>
+                <el-col :span="6" :offset="10">
+                    <el-popconfirm
+                            confirmButtonText='确认'
+                            cancelButtonText='取消'
+                            confirmButtonType="danger"
+                            icon="el-icon-info"
+                            iconColor="#F56C6C"
+                            title="确认删除这条账目吗？"
+                            @onConfirm="delItem"
+                    >
+                        <el-button icon="el-icon-delete" slot="reference" size="small">删除</el-button>
+                    </el-popconfirm>
+                    <el-button icon="el-icon-edit" size="small" style="margin-left: 7px" @click="openEditor">修改
+                    </el-button>
+                </el-col>
+            </el-row>
+            <!--        <BillListMainDetailItemEditor/>-->
+        </el-collapse-item>
+    </div>
 </template>
 
 <script>
@@ -122,6 +123,10 @@
             delItem() {
                 console.log('delete node:', this.node.id);
                 ipc.send('delDetailItem', this.node.id);
+            },
+            handleContextMenu(e) {
+                e.preventDefault();
+                alert('aaa');
             }
 
         },

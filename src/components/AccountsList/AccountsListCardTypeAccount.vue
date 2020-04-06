@@ -1,43 +1,65 @@
 <template>
-    <el-card class="box-card" shadow="hover" :body-style="{'background-color':(this.node.isCurrent?'#F5F7FA':undefined)}">
-        <el-row align="middle" type="flex" justify="center">
-            <el-col :span="node.level*2-2">
-                <div class="accounts-list-card-group-color-marker" :style="{'background-color':parentBackgroundColor}"></div>
-            </el-col>
-            <el-col :span="4" class="accounts-list-card-icon-col">
-                <i class="icon el-icon-s-finance"></i>
-            </el-col>
-            <el-col :span="20-(node.level-1)*2">
-                <div>
-                    <div>{{node.label}}</div>
-                    <div>bbb</div>
-                </div>
-            </el-col>
-        </el-row>
-    </el-card>
+    <div @contextmenu="handleContextMenu">
+        <el-card class="box-card" shadow="hover"
+                 :body-style="{'background-color':(this.node.isCurrent?'#F5F7FA':undefined)}">
+            <el-row align="middle" type="flex" justify="center">
+                <el-col :span="node.level*2-2">
+                    <div class="accounts-list-card-group-color-marker"
+                         :style="{'background-color':parentBackgroundColor}"></div>
+                </el-col>
+                <el-col :span="4" class="accounts-list-card-icon-col">
+                    <i class="icon el-icon-s-finance"></i>
+                </el-col>
+                <el-col :span="20-(node.level-1)*2">
+                    <div>
+                        <div>{{node.label}}</div>
+                        <div>￥{{node.data.balance}}</div>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-card>
+    </div>
 </template>
 
 <script>
+    import {remote} from 'electron';
+
+    const {Menu, MenuItem} = remote;
+
     export default {
-        data(){
-            return{
-                parentBackgroundColor:(this.node.level===2?this.node.parent.data.color:'#fff'),
+        data() {
+            return {
+                parentBackgroundColor: (this.node.level === 2 ? this.node.parent.data.color : '#fff'),
             }
         },
         name: "AccountsListCardTypeAccount",
         props: ['node'],
         methods: {
+            handleContextMenu(e) {
+                e.preventDefault();
+                const menu = new Menu();
+                menu.append(new MenuItem({
+                    label: '弹窗', click: this.test
+                }));
+                menu.popup();
+            },
+            test() {
+                alert('bbb');
+            }
         },
-        watch:{
-            isCurrent:function (n,o) {
-                console.log(n,o);
+        computed: {
+
+        },
+        watch: {
+            isCurrent: function (n, o) {
+                console.log(n, o);
             }
         }
     }
 </script>
 
 <style scoped>
-    .accounts-list-card-group-color-marker{
+    .accounts-list-card-group-color-marker {
         height: 300%;
         float: left;
         position: absolute;

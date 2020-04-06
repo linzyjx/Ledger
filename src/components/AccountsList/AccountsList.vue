@@ -30,18 +30,21 @@
 <script>
     import AccountsListCardTypeGroup from "./AccountsListCardTypeGroup";
     import AccountsListCardTypeAccount from "./AccountsListCardTypeAccount";
-    import * as AccountListData from "../../testdata/AccountListData";
+    // import * as AccountListData from "../../testdata/AccountListData";
     import {getAccountListData} from '@/js/db/RendererDB';
-    // import {ipcRenderer as ipc} from 'electron';
+    import {ipcRenderer as ipc} from 'electron';
 
     export default {
         components: {AccountsListCardTypeAccount, AccountsListCardTypeGroup},
         mounted() {
             this.loadAccountListData();
+            ipc.on('updateBillDetail', () => {
+                this.loadAccountListData();
+            })
         },
         data() {
             return {
-                data: AccountListData.data.data
+                data: []
             };
         },
         methods: {
@@ -90,7 +93,17 @@
             },
             async loadAccountListData() {
                 this.data = await getAccountListData();
-                console.log(this.data);
+                this.data[0].balance = 0;
+                for (let item of this.data) {
+                    if (item.type === 'group') {
+                        item.balance = 0;
+                        for (let child_item of item.children) {
+                            item.balance = Math.round((child_item.balance + item.balance) * 100) / 100;
+                        }
+                    }
+                    this.data[0].balance = Math.round((this.data[0].balance + item.balance) * 100) / 100;
+                }
+                console.log('loadAccountListData:', this.data);
             }
         }
     };
