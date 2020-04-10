@@ -80,6 +80,70 @@ function addAccountListNode(row, rowNode) {
     return nodeData;
 }
 
-export {getBilllistDataByAccountId, getBilllistDataById, getAccountListData, getAccountList}
+async function getCategoryList() {
+    let db = await loadReadDBFile();
+    let query = SQL`SELECT * from category_list order by category_id ASC`;
+    let rowData = await db.all(query);
+    let data = {};
+    for (let item of rowData) {
+        data[item.category_id] = {
+            id: item.category_id,
+            name: item.category_name,
+            color: item.category_color,
+            icon: item.category_icon
+        }
+    }
+    return data;
+}
+
+async function getCategoryListData(type = undefined) {
+    let db = await loadReadDBFile();
+    let query = SQL`SELECT * from category_list where category_type = ${type} order by category_id ASC`;
+    return await db.all(query);
+}
+
+async function getCategoryListTree(type) {
+    let rowData = await getCategoryListData(type);
+    for (let node of rowData) {
+        node.category_children = JSON.parse(node.category_children);
+    }
+    let data = [];
+    for (let item of rowData) {
+        data[item.category_id] = item;
+    }
+    console.log(data);
+    return transCategoryListData2Tree(data, data[type]);
+}
+
+function transCategoryListData2Tree(rowData, rowNode) {
+    try {
+        let nodeData = {
+            id: rowNode.category_id,
+            label: rowNode.category_name,
+            icon: rowNode.category_icon,
+            color: rowNode.category_color
+        }
+        if (rowNode.category_children !== null) {
+            let childrenData = [];
+            for (let i of rowNode.category_children) {
+                childrenData.push(transCategoryListData2Tree(rowData, rowData[i]));
+            }
+            nodeData.children = childrenData;
+        }
+        return nodeData;
+    } catch (e) {
+        console.error(e, rowNode);
+    }
+}
+
+export {
+    getBilllistDataByAccountId,
+    getBilllistDataById,
+    getAccountListData,
+    getAccountList,
+    getCategoryListData,
+    getCategoryListTree,
+    getCategoryList
+}
 
 

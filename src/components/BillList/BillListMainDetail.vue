@@ -9,7 +9,8 @@
                 style="overflow:auto;"
             >
                 <li v-for="node of countData" :key="node.id" class="billlist-main-detail-item">
-                    <BillListMainDetailItem :node="node" :id="node.id"/>
+                    <BillListMainDetailItem :node="node"
+                                            :category="categoryData" :id="node.id"/>
                 </li>
                 <!--                <p v-show="noMore">没有更多了</p>-->
                 <!--                <el-button @click="updateData">click</el-button>-->
@@ -25,13 +26,8 @@
 
 <script>
     import * as AccountListData from "../../testdata/AccountListData";
-    // import * as BillListDetailData from "../../testdata/BillListDetailData";
     import BillListMainDetailItem from "./BillListMainDetailItem";
-    // import SQL from "sql-template-strings";
-    // import sqlite from "sqlite";
-    // import sqlite3 from 'sqlite3';
-    // import SQL from "sql-template-strings";
-    import {getBilllistDataByAccountId} from '@/js/db/RendererDB';
+    import {getBilllistDataByAccountId, getCategoryList} from '@/js/db/RendererDB';
     import {ipcRenderer as ipc} from 'electron';
     import BillListMainDetailAddButton from "./BillListMainDetailAddButton";
 
@@ -51,7 +47,8 @@
         data() {
             return {
                 countData: [],
-                tradingData: {}
+                tradingData: {},
+                categoryData: {}
             }
         },
 
@@ -70,6 +67,7 @@
                 console.log('load:', this.countData.length);
             },
             async getData() {
+                this.categoryData = await getCategoryList();
                 this.tradingData = await getBilllistDataByAccountId(this.$route.params.id);
                 //总账本重算余额
                 if (Number(this.$route.params.id) === 0) {

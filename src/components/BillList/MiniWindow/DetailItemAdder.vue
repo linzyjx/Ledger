@@ -13,6 +13,7 @@
             <AccountSelector v-if="data.type===2" name="转入账户" :account="data.transfer_deal_account"
                              ref="transfer_deal_selector"
                              @change="data.transfer_deal_account=$event"/>
+            <CategorySelector v-if="data.type!==2" :id="data.category" @change="data.category=Number($event)"/>
             <el-form-item label="名称">
                 <el-input v-model="data.name" @focus="focus($event)"></el-input>
             </el-form-item>
@@ -53,10 +54,11 @@
     import {getAccountList} from '@/js/db/RendererDB';
     import {ipcRenderer as ipc} from 'electron';
     import AccountSelector from "./AccountSelector";
+    import CategorySelector from "./CategorySelector";
     // 子窗口内容模板
     export default {
         name: "DetailAdder",
-        components: {AccountSelector},
+        components: {CategorySelector, AccountSelector},
         mounted() {
             this.getAccountList();
             if (Number(this.$route.params.type) === 0) {
@@ -74,7 +76,8 @@
                     account: Number(this.$route.query.account),
                     amount: 0,
                     time: new Date(),
-                    transfer_deal_account: undefined
+                    transfer_deal_account: undefined,
+                    category: undefined
                 },
                 accountData: [],
                 rawData: {},

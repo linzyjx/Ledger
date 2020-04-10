@@ -8,9 +8,11 @@
                     <el-radio-button :label="2">转账</el-radio-button>
                 </el-radio-group>
             </div>
+
             <AccountSelector :account="data.account" @change="data.account=$event" ref="account_selector"/>
             <AccountSelector v-show="data.type===2" name="转入账户" :account="data.transfer_deal_account"
                              @change="data.transfer_deal_account=$event" ref="transfer_deal_selector"/>
+            <CategorySelector v-if="data.type!==2" :id="data.category" @change="data.category=Number($event)"></CategorySelector>
             <el-form-item label="名称">
                 <el-input v-model="data.name" @focus="focus($event)"></el-input>
             </el-form-item>
@@ -50,10 +52,11 @@
     import {getBilllistDataById} from '@/js/db/RendererDB';
     import {ipcRenderer as ipc} from 'electron';
     import AccountSelector from "./AccountSelector";
+    import CategorySelector from "./CategorySelector";
     // 子窗口内容模板
     export default {
         name: "BillListItemEditor",
-        components: {AccountSelector},
+        components: {CategorySelector, AccountSelector},
         created() {
         },
         data() {

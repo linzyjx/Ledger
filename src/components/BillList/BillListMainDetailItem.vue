@@ -5,7 +5,9 @@
                 <div class="billlist-main-detail-item-title">
                     <el-row>
                         <el-col :span="2" class="billlist-main-detail-item-icon"><i
-                                class="icon-background el-icon-s-grid"></i></el-col>
+                                :class="['icon-background',categoryData.icon?categoryData.icon:'el-icon-more-outline']"
+                                :style="{'background-color':(categoryData.color?categoryData.color:'#ffffff')}"></i>
+                        </el-col>
                         <el-col :span="13">
                             <div class="billlist-main-detail-item-text">
                                 <div class="name bond">{{node.name}}</div>
@@ -26,7 +28,7 @@
             <el-row type="flex" align="middle">
                 <el-col :span="6" :offset="2">
                     <div>商家：{{node.party_name}}</div>
-                    <div>类别：</div>
+                    <div>类别：{{categoryData.name}}</div>
                 </el-col>
                 <el-col :span="6" :offset="10">
                     <el-popconfirm
@@ -61,7 +63,7 @@
         components: {},
         mounted() {
             // this.colorMarkerHeight = window.getComputedStyle(this.$refs.detailitem).height;
-            // console.log('aaa');
+            console.log('aaa');
         },
         updated() {
             // this.colorMarkerHeight = '100px'
@@ -70,9 +72,7 @@
         props: {
             id: Number,
             node: Object,
-            closeMethod: () => {
-                this.dialogVisible = false;
-            }
+            category: Object
         },
         data() {
             return {
@@ -130,13 +130,32 @@
             }
 
         },
-        computed: {}
+        computed: {
+            categoryData: function () {
+                if (this.node.type === 2) {
+                    return {
+                        name: this.node.amount >= 0 ? '转入' : '转出',
+                        icon: 'el-icon-refresh',
+                        color: this.node.amount >= 0 ? '#67C23A' : '#F56C6C'
+                    }
+                }
+                let category = this.category[this.node.category];
+                if (category === undefined) {
+                    category = {
+                        name: '',
+                        icon: 'el-icon-warning-outline',
+                        color: '#ffffff'
+                    }
+                }
+                return category;
+            }
+        }
     }
     //格式化日期
     Date.prototype.Format = function (fmt) {
         var o = {
             "y+": this.getFullYear(),
-            "M+": this.getMonth() + 1,                 //月份
+            "M+": this.getMonth() + 1,               //月份
             "d+": this.getDate(),                    //日
             "h+": this.getHours(),                   //小时
             "m+": this.getMinutes(),                 //分
@@ -200,7 +219,7 @@
 
     .billlist-main-detail-item-icon .icon-background {
         color: #ffffff;
-        background-color: #3a8ee6;
+        background-color: #ffffff;
         border-radius: 40px;
         height: 40px;
         width: 39px;

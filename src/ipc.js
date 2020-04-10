@@ -36,8 +36,6 @@ function mainWindowInit() {
         });
     });
 
-
-
     startWindow(mainWindow);
     // console.log(mainWindow);
 }

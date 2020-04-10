@@ -13,12 +13,16 @@
 <!--                        <i class="el-icon-menu"></i>-->
 <!--                        <span slot="title">App</span>-->
 <!--                    </el-menu-item>-->
-                    <el-menu-item index="/App/BillList/Account/0">
-                        <i class="el-icon-document"></i>
-                        <template slot="title">HelloWorld</template>
+                    <el-menu-item index="">
+                        <i class="el-icon-notebook-2"></i>
+                        <template slot="title">账目</template>
                     </el-menu-item>
                 </el-main>
-                <el-footer>
+                <el-footer :height="null">
+                    <el-menu-item index="/App/BillList/Account/0">
+                        <i class="el-icon-setting"></i>
+                        <template slot="title">设置</template>
+                    </el-menu-item>
                     <el-menu-item v-on:click="isCollapse=!isCollapse">
                         <i v-bind:class="[isCollapse?'el-icon-arrow-right':'el-icon-arrow-left']"></i>
                         <span slot="title">{{isCollapse?'展开':'折叠'}}</span>
