@@ -12,7 +12,7 @@
             <AccountSelector :account="data.account" @change="data.account=$event" ref="account_selector"/>
             <AccountSelector v-show="data.type===2" name="转入账户" :account="data.transfer_deal_account"
                              @change="data.transfer_deal_account=$event" ref="transfer_deal_selector"/>
-            <CategorySelector v-if="data.type!==2" :id="data.category" @change="data.category=Number($event)"></CategorySelector>
+            <CategorySelector v-if="data.type!==2" :id="data.category" :type="data.type" @change="data.category=Number($event)"></CategorySelector>
             <el-form-item label="名称">
                 <el-input v-model="data.name" @focus="focus($event)"></el-input>
             </el-form-item>

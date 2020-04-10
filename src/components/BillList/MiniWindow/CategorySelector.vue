@@ -21,8 +21,10 @@
     export default {
         name: "CategorySelector",
         mounted() {
-            this.selectedLabel = this.getLabelById(this.selectedId);
-            this.getCategoryListData(1);
+            console.log('mounted:',this.type);
+            if (this.type!==undefined) {
+                this.getCategoryListData(this.type);
+            }
         },
         data() {
             return {
@@ -33,7 +35,7 @@
                 selectedLabel: undefined
             }
         },
-        props: ['id'],
+        props: ['id', 'type'],
         methods: {
             handleNodeClick(data) {
                 console.log(data);
@@ -80,9 +82,17 @@
         watch: {
             id: {
                 handler(newId) {
-                    console.log('watch category', newId);
                     this.selectedId = newId;
                     this.selectedLabel = this.getLabelById(newId);
+                },
+                deep: true
+            },
+            type: {
+                handler(newType) {
+                    console.log('type watch:', newType);
+                    this.getCategoryListData(newType).then(() => {
+                        this.selectedLabel = this.getLabelById(this.selectedId);
+                    });
                 },
                 deep: true
             }
