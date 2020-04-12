@@ -40,6 +40,9 @@
             this.loadAccountListData();
             ipc.on('updateBillDetail', () => {
                 this.loadAccountListData();
+            });
+            ipc.on('freshAccountList', () => {
+                this.loadAccountListData();
             })
         },
         data() {
@@ -48,32 +51,37 @@
             };
         },
         methods: {
-            handleDragStart(node) {
-                console.log('drag start', node);
+            handleDragStart() {
+                // console.log('drag start', node);
             },
-            handleDragEnter(draggingNode, dropNode) {
-                console.log('tree drag enter: ', dropNode.label);
+            handleDragEnter() {
+                // console.log('tree drag enter: ', dropNode.label);
             },
-            handleDragLeave(draggingNode, dropNode) {
-                console.log('tree drag leave: ', dropNode.label);
+            handleDragLeave() {
+                // console.log('tree drag leave: ', dropNode.label);
             },
-            handleDragOver(draggingNode, dropNode) {
-                console.log('tree drag over: ', dropNode.label);
+            handleDragOver() {
+                // console.log('tree drag over: ', dropNode.label);
             },
-            handleDragEnd(draggingNode, dropNode, dropType) {
-                console.log('tree drag end: ', dropNode && dropNode.label, dropType);
+            handleDragEnd() {
+                // console.log('tree drag end: ', dropNode && dropNode.label, dropType);
             },
             handleDrop(draggingNode, dropNode, dropType) {
                 console.log('tree drop: ', dropNode.label, dropType);
+                ipc.send('updateAccountList', draggingNode.data.id, dropNode.data.id, dropType);
             },
             allowDrop(draggingNode, dropNode, type) {
                 if (draggingNode.data.type === 'account') {
                     if ((dropNode.level === 2)) {
-                        console.log(dropNode.label, type);
+                        // console.log(dropNode.label, type);
                         return type !== 'inner';
                         // return true;
                     } else {
-                        return true;
+                        if (dropNode.data.type === 'group') {
+                            return true;
+                        } else {
+                            return type !== 'inner';
+                        }
                     }
                 } else {
                     return type !== 'inner';
@@ -93,7 +101,7 @@
             },
             async loadAccountListData() {
                 this.data = await getAccountListData();
-                this.data[0].balance = 0;
+                // this.data[0].balance = 0;
                 for (let item of this.data) {
                     if (item.type === 'group') {
                         item.balance = 0;
@@ -101,7 +109,7 @@
                             item.balance = Math.round((child_item.balance + item.balance) * 100) / 100;
                         }
                     }
-                    this.data[0].balance = Math.round((this.data[0].balance + item.balance) * 100) / 100;
+                    // this.data[0].balance = Math.round((this.data[0].balance + item.balance) * 100) / 100;
                 }
                 console.log('loadAccountListData:', this.data);
             }

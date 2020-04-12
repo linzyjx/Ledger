@@ -5,9 +5,6 @@ export {mainWindowInit};
 
 // import * as Demo1 from "./js/MiniWindowDemo1";
 import {mainWindow} from "./js/MainWindow";
-import SQL from 'sql-template-strings';
-import sqlite from 'sqlite';
-import sqlite3 from 'sqlite3';
 
 import {startWindow} from './js/BackGroundMiniWindow';
 import {
@@ -17,7 +14,8 @@ import {
     updateCategoryList,
     addCategoryItem,
     deleteCategoryItem,
-    updateCategoryItem
+    updateCategoryItem,
+    updateAccountList
 } from './js/db/MainDB';
 
 // 主窗口创建时
@@ -66,6 +64,16 @@ function mainWindowInit() {
         updateCategoryItem(id, data).then(() => {
             e.sender.send('updateCateList');
         });
+    });
+
+    ipcMain.on('updateAccountList', (e, id, dropNodeId, dropType) => {
+        updateAccountList(id, dropNodeId, dropType)
+            .then(() => {
+                e.sender.send('freshAccountList');
+            })
+            .catch(() => {
+                e.sender.send('freshAccountList');
+            });
     });
 
     startWindow(mainWindow);

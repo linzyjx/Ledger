@@ -5,12 +5,23 @@ import {loadReadDBFile} from '../index'
 
 async function getBilllistDataByAccountId(accountId) {
     let db = await loadReadDBFile();
+    accountId = Number(accountId);
     if (Number(accountId) === 0) {
         return await db.all(SQL`SELECT * FROM bill_list ORDER BY time ASC`);
-    } else {
-        return await db.all(SQL`SELECT * FROM bill_list WHERE account=${accountId} ORDER BY time ASC`);
     }
-
+    let {type: accountType} = await db.get(SQL`SELECT account_type as type FROM account_list WHERE account_id = ${accountId}`)
+    if (accountType === 1) {
+        return await db.all(SQL`SELECT * FROM bill_list WHERE account=${accountId} ORDER BY time ASC`);
+    } else if (accountType === 0) {
+        return await db.all(SQL`SELECT bill_list.*
+                                FROM bill_list,
+                                     (SELECT value as childId
+                                      FROM account_list,
+                                           json_each(account_children) parent
+                                      WHERE account_id = ${accountId}) list
+                                WHERE account = (list.childId)
+                                ORDER BY time ASC`);
+    }
 }
 
 async function getBilllistDataById(id) {
@@ -49,13 +60,13 @@ FROM account_list
 
 function transAccountListData(row) {
     let data = [];
-    let rootNode = {
-        id: row[0].account_id,
-        label: row[0].account_name,
-        type: 'account',
-        color: '#f56c6cbf'
-    };
-    data.push(rootNode);
+    // let rootNode = {
+    //     id: row[0].account_id,
+    //     label: row[0].account_name,
+    //     type: 'account',
+    //     color: '#f56c6cbf'
+    // };
+    // data.push(rootNode);
     for (let i of row[0].account_children) {
         data.push(addAccountListNode(row, row[i]));
     }
@@ -66,8 +77,8 @@ function addAccountListNode(row, rowNode) {
     let nodeData = {
         id: rowNode.account_id,
         label: rowNode.account_name,
-        type: ((rowNode.account_type == 0) ? 'group' : 'account'),
-        color: '#f56c6cbf',
+        type: ((rowNode.account_type === 0) ? 'group' : 'account'),
+        color: rowNode.account_color,
         balance: rowNode.account_balance
     };
     if (rowNode.account_children !== null) {
@@ -152,7 +163,7 @@ function transCategoryListData2Tree(rowData, rowNode) {
 async function getBalanceSummary() {
     let db = await loadReadDBFile();
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
-    let monthStart = (new Date(y, m, 1).getTime())/1000;
+    let monthStart = (new Date(y, m, 1).getTime()) / 1000;
     let {netBalance: netBalance} = await db.get(SQL`SELECT (cast((sum(amount) * 1000) as integer) / 1000.0) as netBalance FROM bill_list`);
     let {monthlyIncome: monthlyIncome} = await db.get(SQL`SELECT (cast((sum(amount) * 1000) as integer) / 1000.0) as monthlyIncome
                                                         FROM bill_list WHERE time >= ${monthStart} and type=0`);

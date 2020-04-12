@@ -1,6 +1,5 @@
 import SQL from 'sql-template-strings';
 import {getNearlyNewBillId, loadDBFile} from '../index'
-import el from "element-ui/src/locale/lang/el";
 
 async function updateDetailItem(id, type, changeData) {
     let db = await loadDBFile();
@@ -248,6 +247,68 @@ async function updateCategoryItem(id, data) {
                     WHERE category_id = ${id}`);
 }
 
+async function updateAccountList(id, dropNodeId, dropType) {
+    let db = await loadDBFile();
+    await db.run(`begin transaction`);
+    try {
+        let {id: oldParentId, fullkey: oldParentFullKey}
+            = await db.get(SQL`SELECT account_id as id, parent.fullkey as fullkey
+                                FROM account_list,
+                                     json_each(account_children) parent
+                                WHERE parent.value = ${id}`);
+        await db.run(SQL`UPDATE account_list
+                            SET account_children=json_remove(account_children, ${oldParentFullKey})
+                            WHERE account_id = ${oldParentId}`);
+        if (dropType === 'inner') {
+            let {account_children: children}
+                = await db.get(SQL`SELECT account_children
+                                    FROM account_list
+                                    WHERE account_id = ${dropNodeId}`);
+            if (children === null) {
+                children = '[]';
+            }
+            children = JSON.parse(children);
+            children.push(id);
+            await db.run(SQL`UPDATE account_list
+                                SET account_children=${JSON.stringify(children)}
+                                WHERE account_id = ${dropNodeId}`);
+        } else {
+            let {id: parentId, children: children}
+                = await db.get(SQL`SELECT account_id as id, account_children as children
+                                    FROM account_list,
+                                         json_each(account_children) parent
+                                    WHERE parent.value = ${dropNodeId}`);
+            if (children === null) {
+                children = '[]';
+            }
+            children = JSON.parse(children);
+            if (dropType === 'before') {
+                for (let index in children) {
+                    if (children[index] === dropNodeId) {
+                        children.splice(index, 0, id);
+                        break;
+                    }
+                }
+            } else {
+                //after
+                for (let index in children) {
+                    if (children[index] === dropNodeId) {
+                        children.splice((index + 1), 0, id);
+                        break;
+                    }
+                }
+            }
+            await db.run(SQL`UPDATE account_list
+                            SET account_children=${JSON.stringify(children)}
+                            WHERE account_id = ${parentId}`);
+        }
+        await db.run(`commit`);
+    } catch (e) {
+        await db.run(`rollback`);
+        console.log(e);
+    }
+}
+
 export {
     updateDetailItem,
     addDetailItem,
@@ -255,7 +316,8 @@ export {
     updateCategoryList,
     addCategoryItem,
     deleteCategoryItem,
-    updateCategoryItem
+    updateCategoryItem,
+    updateAccountList
 }
 
 

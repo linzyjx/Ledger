@@ -25,7 +25,6 @@
 </template>
 
 <script>
-    import * as AccountListData from "../../testdata/AccountListData";
     import BillListMainDetailItem from "./BillListMainDetailItem";
     import {getBilllistDataByAccountId, getCategoryList} from '@/js/db/RendererDB';
     import {ipcRenderer as ipc} from 'electron';
@@ -53,13 +52,6 @@
         },
 
         methods: {
-            test() {
-                console.log('getNode:', this.accountData);
-            },
-            accountData: function (key, value) {
-                // console.log(AccountListData.findNode(key,value));
-                return AccountListData.findNode(key, value);
-            },
             load() {
                 for (let i = 0; i < 10 && this.tradingData.length > 0; i++) {
                     this.countData.push(this.tradingData.pop());
@@ -79,8 +71,8 @@
                 }
                 let tempData = [];
                 console.log('getData:', this.$route.params.id);
+                // eslint-disable-next-line no-unused-vars
                 for (let i in this.countData) {
-                    i;
                     if (this.tradingData.length > 0) {
                         tempData.push(this.tradingData.pop());
                     }
