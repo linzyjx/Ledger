@@ -3,8 +3,8 @@
         <el-collapse style="height: 100%" accordion v-if="(tradingData.length+countData.length)!==0">
             <ul class="billlist-main-detail-ul"
                 v-infinite-scroll="load"
-                :infinite-scroll-delay="200"
-                :infinite-scroll-distance="0"
+                :infinite-scroll-delay="100"
+                :infinite-scroll-distance="10"
                 :infinite-scroll-disabled="disabled"
                 style="overflow:auto;"
             >

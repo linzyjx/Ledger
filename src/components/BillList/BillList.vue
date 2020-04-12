@@ -5,7 +5,7 @@
                 <el-main>
                     <AccountsList/>
                 </el-main>
-                <el-footer>
+                <el-footer height="80px" style="border: 1px solid #EBEEF5">
                     <BillListFooter/>
                 </el-footer>
             </el-container>

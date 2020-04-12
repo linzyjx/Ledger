@@ -17,6 +17,8 @@ import BillListItemAdder from "./components/BillList/MiniWindow/DetailItemAdder"
 import AccountsList from "./components/AccountsList/AccountsList";
 import BillList from "./components/BillList/BillList";
 import BillListMain from "./components/BillList/BillListMain";
+import Category from "./components/Category/Category";
+import CategoryPage from "./components/Category/CategoryPage";
 
 
 Vue.config.productionTip = false;
@@ -51,6 +53,16 @@ const router = new VueRouter({
                         }]
                     },
                     {
+                        path: '/App/Category',
+                        name: 'Category',
+                        component: Category,
+                        children:[{
+                            path: '/App/Category/:id',
+                            name: 'CategoryPage',
+                            component: CategoryPage,
+                        }]
+                    },
+                    {
                         path: '/App/HelloWorld',
                         name: 'HelloWorld',
                         component: HelloWorld
@@ -63,7 +75,7 @@ const router = new VueRouter({
                 children: [
                     {
                         path: '/MiniWindow/Home',
-                        name:'MiniWondowHome',
+                        name: 'MiniWondowHome',
                         component: MiniWindowHome
                     },
                     {

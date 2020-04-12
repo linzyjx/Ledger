@@ -80,6 +80,19 @@ function addAccountListNode(row, rowNode) {
     return nodeData;
 }
 
+async function getCategoryDataById(id) {
+    let db = await loadReadDBFile();
+    let query = SQL`SELECT * FROM category_list WHERE category_id = ${id}`;
+    let rawData = await db.get(query);
+    // console.log(await db.get(`SELECT category_children FROM category_list WHERE category_id=${id}`));
+    return {
+        id: rawData.category_id,
+        name: rawData.category_name,
+        color: rawData.category_color,
+        icon: rawData.category_icon
+    }
+}
+
 async function getCategoryList() {
     let db = await loadReadDBFile();
     let query = SQL`SELECT * from category_list order by category_id ASC`;
@@ -136,6 +149,20 @@ function transCategoryListData2Tree(rowData, rowNode) {
     }
 }
 
+async function getBalanceSummary() {
+    let db = await loadReadDBFile();
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    let monthStart = (new Date(y, m, 1).getTime())/1000;
+    let {netBalance: netBalance} = await db.get(SQL`SELECT (cast((sum(amount) * 1000) as integer) / 1000.0) as netBalance FROM bill_list`);
+    let {monthlyIncome: monthlyIncome} = await db.get(SQL`SELECT (cast((sum(amount) * 1000) as integer) / 1000.0) as monthlyIncome
+                                                        FROM bill_list WHERE time >= ${monthStart} and type=0`);
+    let {monthlySpending: monthlySpending} = await db.get(SQL`SELECT (cast((sum(amount) * 1000) as integer) / 1000.0) as monthlySpending
+                                                        FROM bill_list WHERE time >= ${monthStart} and type=1`);
+    console.log('getBalanceSummary:', monthStart, netBalance, monthlyIncome, monthlySpending)
+    return [netBalance, monthlyIncome, monthlySpending];
+}
+
+
 export {
     getBilllistDataByAccountId,
     getBilllistDataById,
@@ -143,7 +170,9 @@ export {
     getAccountList,
     getCategoryListData,
     getCategoryListTree,
-    getCategoryList
+    getCategoryList,
+    getCategoryDataById,
+    getBalanceSummary
 }
 
 

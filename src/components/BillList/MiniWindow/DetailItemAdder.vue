@@ -1,5 +1,5 @@
 <template>
-    <div class="billlist-item-editor">
+    <div class="billlist-item-adder">
         <el-form :model="data" label-position="right" size="small" label-width="auto">
             <div class="type-radio-group">
                 <el-radio-group v-model="data.type" size="medium">
@@ -210,7 +210,7 @@
 </script>
 
 <style scoped>
-    .billlist-item-editor {
+    .billlist-item-adder {
         margin: 20px;
     }
 
@@ -225,7 +225,7 @@
 </style>
 
 <style>
-    .type-radio-group .el-radio-button__inner {
+    .billlist-item-adder .type-radio-group .el-radio-button__inner {
         width: 150px;
     }
 

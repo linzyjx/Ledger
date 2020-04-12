@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import {getNearlyNewBillId, loadDBFile} from '../index'
+import el from "element-ui/src/locale/lang/el";
 
 async function updateDetailItem(id, type, changeData) {
     let db = await loadDBFile();
@@ -143,7 +144,118 @@ where t1.id = t2.id`;
     await db.run(query);
 }
 
+//修改CategoryListTree
+async function updateCategoryList(id, dropNodeId, dropType) {
+    let db = await loadDBFile();
+    await db.run(`begin transaction`);
+    try {
+        let {id: oldParentId, fullkey: oldParentFullKey}
+            = await db.get(SQL`SELECT category_id as id,parent.fullkey as fullkey 
+                                FROM category_list, json_each(category_children) parent 
+                                WHERE parent.value = ${id}`);
+        await db.run(SQL`UPDATE category_list
+                    SET category_children=json_remove(category_children, ${oldParentFullKey})
+                    WHERE category_id=${oldParentId}`);
+        if (dropType === 'inner') {
+            let {category_children: children} = await db.get(SQL`SELECT category_children 
+                                        FROM category_list WHERE category_id=${dropNodeId}`);
+            if (children === null) {
+                children = '[]';
+            }
+            children = JSON.parse(children);
+            children.push(id);
+            await db.run(SQL`UPDATE category_list
+                                SET category_children=${JSON.stringify(children)}
+                                WHERE category_id=${dropNodeId}`);
+        } else {
+            let {id: parentId, children: children} = await db.get(SQL`SELECT category_id as id,category_children as children 
+                                                FROM category_list, json_each(category_children) parent 
+                                                WHERE parent.value = ${dropNodeId}`);
+            if (children === null) {
+                children = '[]';
+            }
+            children = JSON.parse(children);
+            if (dropType === 'before') {
+                for (let index in children) {
+                    if (children[index] === dropNodeId) {
+                        children.splice(index, 0, id);
+                        break;
+                    }
+                }
+            } else {
+                //after
+                for (let index in children) {
+                    if (children[index] === dropNodeId) {
+                        children.splice((index + 1), 0, id);
+                        break;
+                    }
+                }
+            }
+            await db.run(SQL`UPDATE category_list
+                                SET category_children=${JSON.stringify(children)}
+                                WHERE category_id=${parentId}`);
+        }
+        await db.run('commit');
+    } catch (e) {
+        await db.run(`rollback`);
+        console.log(e);
+    }
+}
 
-export {updateDetailItem, addDetailItem, deleteDetailItem}
+async function addCategoryItem(type) {
+    let db = await loadDBFile();
+    await db.run(SQL`INSERT INTO category_list(category_name, category_icon, category_color, category_type)
+                        VALUES ('New Category', 'el-icon-star-off', '#66B1FF', ${type})`);
+    let {id: id} = await db.get(SQL`SELECT last_insert_rowid() AS id FROM category_list LIMIT 1`);
+    let {category_children: children} = await db.get(SQL`SELECT category_children 
+                                        FROM category_list WHERE category_id=${type}`);
+    if (children === null) {
+        children = '[]';
+    }
+    children = JSON.parse(children);
+    children.splice(0, 0, id);
+    await db.run(SQL`UPDATE category_list
+                                SET category_children=${JSON.stringify(children)}
+                                WHERE category_id=${type}`);
+}
+
+async function deleteCategoryItem(id) {
+    let db = await loadDBFile();
+    try {
+        await db.run(`begin transaction`);
+        console.log('deleteCategoryItem', id);
+        let {category_id: parentId, fullkey: parentFullKey} = await db.get(SQL`SELECT category_id,parent.fullkey as fullkey 
+                                FROM category_list, json_each(category_children) parent 
+                                WHERE parent.value = ${id}`);
+        await db.run(SQL`UPDATE category_list
+                    SET category_children=json_remove(category_children, ${parentFullKey})
+                    WHERE category_id=${parentId}`);
+        await db.run(SQL`DELETE FROM category_list WHERE category_id=${id}`);
+        await db.run(`commit`);
+    } catch (e) {
+        await db.run(`rollback`);
+        console.error(e);
+    }
+
+}
+
+async function updateCategoryItem(id, data) {
+    let db = await loadDBFile();
+    await db.get(SQL`UPDATE category_list
+                    SET category_name=${data.name},
+                        category_color=${data.color},
+                        category_icon=${data.icon}
+                    WHERE category_id = ${id}`);
+}
+
+export {
+    updateDetailItem,
+    addDetailItem,
+    deleteDetailItem,
+    updateCategoryList,
+    addCategoryItem,
+    deleteCategoryItem,
+    updateCategoryItem
+}
 
 

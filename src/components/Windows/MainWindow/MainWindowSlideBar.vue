@@ -9,17 +9,21 @@
                  style="height: 100%">
             <el-container style="height: 100%">
                 <el-main>
-<!--                    <el-menu-item index="/App/AccountsList">-->
-<!--                        <i class="el-icon-menu"></i>-->
-<!--                        <span slot="title">App</span>-->
-<!--                    </el-menu-item>-->
-                    <el-menu-item index="">
+                    <el-menu-item index="/App/BillList/Account/0">
                         <i class="el-icon-notebook-2"></i>
                         <template slot="title">账目</template>
                     </el-menu-item>
+                    <el-menu-item index="/App/Category">
+                        <i class="el-icon-paperclip"></i>
+                        <template slot="title">类别</template>
+                    </el-menu-item>
                 </el-main>
                 <el-footer :height="null">
-                    <el-menu-item index="/App/BillList/Account/0">
+                    <el-menu-item index="/App/BillList/">
+                        <i class="el-icon-plus"></i>
+                        <template slot="title">新建</template>
+                    </el-menu-item>
+                    <el-menu-item index="">
                         <i class="el-icon-setting"></i>
                         <template slot="title">设置</template>
                     </el-menu-item>

@@ -12,7 +12,8 @@
             <AccountSelector :account="data.account" @change="data.account=$event" ref="account_selector"/>
             <AccountSelector v-show="data.type===2" name="转入账户" :account="data.transfer_deal_account"
                              @change="data.transfer_deal_account=$event" ref="transfer_deal_selector"/>
-            <CategorySelector v-if="data.type!==2" :id="data.category" :type="data.type" @change="data.category=Number($event)"></CategorySelector>
+            <CategorySelector v-if="data.type!==2" :id="data.category" :type="data.type"
+                              @change="data.category=Number($event)"></CategorySelector>
             <el-form-item label="名称">
                 <el-input v-model="data.name" @focus="focus($event)"></el-input>
             </el-form-item>
@@ -85,6 +86,7 @@
                     this.data.amount = Math.abs(this.data.amount);
                 }
                 this.data.time = this.data.time * 1000;
+                this.data.amount = Math.abs(this.data.amount);
                 // this.data=this.rawData;
                 this.rawData = {};
                 Object.assign(this.rawData, this.data);
@@ -100,6 +102,9 @@
                             changeData[rawItem] = changeData[rawItem] / 1000;
                         }
                     }
+                }
+                if (this.data.type === 1) {
+                    changeData.amount *= -1.0
                 }
                 if (Object.keys(changeData).length !== 0) {
                     ipc.send('updateDetailItem', this.$route.params.id, this.data.type, changeData);
@@ -184,7 +189,7 @@
 </style>
 
 <style>
-    .type-radio-group .el-radio-button__inner {
+    .billlist-item-editor .type-radio-group .el-radio-button__inner {
         width: 150px;
     }
 
