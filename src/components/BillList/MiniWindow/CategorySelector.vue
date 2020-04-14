@@ -132,7 +132,7 @@
         height: auto;
     }
 
-    .el-scrollbar__wrap {
+    .category-proper .el-scrollbar__wrap {
         overflow-x: hidden;
     }
 

@@ -15,7 +15,10 @@ import {
     addCategoryItem,
     deleteCategoryItem,
     updateCategoryItem,
-    updateAccountList
+    updateAccountList,
+    updateAccountItem,
+    addAccountItem,
+    deleteAccountItem
 } from './js/db/MainDB';
 
 // 主窗口创建时
@@ -30,7 +33,6 @@ function mainWindowInit() {
             mainWindow.webContents.send('updateBillDetail');
         });
     });
-
     ipcMain.on('addDetailItem', (e, data) => {
         addDetailItem(data).then(() => {
             mainWindow.webContents.send('updateBillDetail');
@@ -47,13 +49,11 @@ function mainWindowInit() {
             mainWindow.webContents.send('updateCateList');
         });
     });
-
     ipcMain.on('addCateItem', (e, type) => {
         addCategoryItem(type).then(() => {
             e.sender.send('updateCateList');
         });
     });
-
     ipcMain.on('delCateItem', (e, id) => {
         deleteCategoryItem(id).then(() => {
             e.sender.send('updateCateList');
@@ -74,6 +74,23 @@ function mainWindowInit() {
             .catch(() => {
                 e.sender.send('freshAccountList');
             });
+    });
+    ipcMain.on('updateAccountItem', (e, id, changeData) => {
+        updateAccountItem(id, changeData)
+            .then(() => {
+                mainWindow.webContents.send('freshAccountList');
+            });
+    });
+    ipcMain.on('addAccountItem', (e, changeData) => {
+        addAccountItem(changeData)
+            .then(() => {
+                mainWindow.webContents.send('freshAccountList');
+            });
+    });
+    ipcMain.on('delAccountItem', (e, id) => {
+        deleteAccountItem(id).then(() => {
+            mainWindow.webContents.send('freshAccountList');
+        });
     });
 
     startWindow(mainWindow);

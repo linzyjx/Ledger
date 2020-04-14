@@ -45,14 +45,13 @@
                                     confirmButtonType="danger"
                                     icon="el-icon-info"
                                     iconColor="#F56C6C"
-                                    title="确认删除这个类别吗？"
+                                    title="确认删除吗？该类别下的项目将转移到父类别。"
                                     @onConfirm="handleDeleteButton"
                             >
                                 <el-button slot="reference" type="danger" icon="el-icon-delete" size="medium">
                                     删除类别
                                 </el-button>
                             </el-popconfirm>
-
                         </el-row>
                     </div>
                 </el-col>

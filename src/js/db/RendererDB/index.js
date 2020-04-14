@@ -34,6 +34,28 @@ async function getBilllistDataById(id) {
     return data;
 }
 
+async function getAccountListDataById(id) {
+    id = Number(id);
+    console.log(id);
+    let db = await loadReadDBFile();
+    let data = await db.get(SQL`SELECT account_id as id, account_name as name, account_type as type, account_color as color
+                            FROM account_list
+                            WHERE account_id = ${id}`);
+    if (data.type === 1) {
+        ({id: data.group} = await db.get(SQL`SELECT account_id as id
+                                            FROM account_list,
+                                                 json_each(account_children) parent
+                                            WHERE parent.value = ${id}`));
+    }
+    console.log('getAccountListDataById', data);
+    return data;
+}
+
+async function getAccountGroup() {
+    let db = await loadReadDBFile();
+    return await db.all(SQL`SELECT account_id as id, account_name as name FROM account_list WHERE account_type = 0`);
+}
+
 async function getAccountList() {
     let db = await loadReadDBFile();
     let rowData = await db.all(SQL`SELECT account_id as id, account_name as name FROM account_list WHERE account_type = 1`);
@@ -50,7 +72,7 @@ async function getAccountListData() {
 FROM account_list
          LEFT JOIN (select account, (cast((sum(amount) * 1000) as integer) / 1000.0) as balance
                     from bill_list
-                    group by account) bl on account_list.account_id = bl.account;`);
+                    group by account) bl on account_list.account_id = bl.account`);
     for (let node of rowData) {
         node.account_children = JSON.parse(node.account_children);
     }
@@ -58,7 +80,7 @@ FROM account_list
     return transAccountListData(rowData);
 }
 
-function transAccountListData(row) {
+function transAccountListData(raw) {
     let data = [];
     // let rootNode = {
     //     id: row[0].account_id,
@@ -67,28 +89,37 @@ function transAccountListData(row) {
     //     color: '#f56c6cbf'
     // };
     // data.push(rootNode);
+    let row = []
+    for (let item of raw) {
+        row[item.account_id] = item;
+    }
     for (let i of row[0].account_children) {
         data.push(addAccountListNode(row, row[i]));
     }
+    console.log(data);
     return data;
 }
 
-function addAccountListNode(row, rowNode) {
-    let nodeData = {
-        id: rowNode.account_id,
-        label: rowNode.account_name,
-        type: ((rowNode.account_type === 0) ? 'group' : 'account'),
-        color: rowNode.account_color,
-        balance: rowNode.account_balance
-    };
-    if (rowNode.account_children !== null) {
-        let childrenData = [];
-        for (let i of rowNode.account_children) {
-            childrenData.push(addAccountListNode(row, row[i]));
+function addAccountListNode(row, rowNode, a = undefined) {
+    try {
+        let nodeData = {
+            id: rowNode.account_id,
+            label: rowNode.account_name,
+            type: ((rowNode.account_type === 0) ? 'group' : 'account'),
+            color: rowNode.account_color,
+            balance: rowNode.account_balance
+        };
+        if (rowNode.account_children !== null) {
+            let childrenData = [];
+            for (let i of rowNode.account_children) {
+                childrenData.push(addAccountListNode(row, row[i], i));
+            }
+            nodeData.children = childrenData;
         }
-        nodeData.children = childrenData;
+        return nodeData;
+    } catch (e) {
+        console.error(e, row, a);
     }
-    return nodeData;
 }
 
 async function getCategoryDataById(id) {
@@ -177,7 +208,9 @@ async function getBalanceSummary() {
 export {
     getBilllistDataByAccountId,
     getBilllistDataById,
+    getAccountListDataById,
     getAccountListData,
+    getAccountGroup,
     getAccountList,
     getCategoryListData,
     getCategoryListTree,

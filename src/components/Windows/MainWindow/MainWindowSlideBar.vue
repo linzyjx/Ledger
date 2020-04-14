@@ -19,8 +19,14 @@
                     </el-menu-item>
                 </el-main>
                 <el-footer :height="null">
-                    <el-menu-item index="/App/BillList/">
-                        <i class="el-icon-plus"></i>
+                    <el-menu-item>
+                        <el-dropdown class="dropdown" trigger="click" @command="handleCommand" placement="right-start">
+                            <el-button type="text" icon="el-icon-plus"></el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item command="1">新建账户</el-dropdown-item>
+                                <el-dropdown-item command="0">新建账户组</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
                         <template slot="title">新建</template>
                     </el-menu-item>
                     <el-menu-item index="">
@@ -66,6 +72,8 @@
 </style>
 
 <script>
+    import {ipcRenderer as ipc} from "electron";
+
     export default {
         props: {},
         data() {
@@ -79,6 +87,9 @@
             },
             handleClose(key, keyPath) {
                 console.log(key, keyPath);
+            },
+            handleCommand(command){
+                ipc.send('RoutePush', `/MiniWindow/AccountEditor/new?type=${command}`);
             }
         }
     }

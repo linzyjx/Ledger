@@ -44,7 +44,7 @@
         methods: {
             async loadAccountListData() {
                 let accountData = await getAccountListData();
-                console.log(this.data);
+                console.log('loadAccountListData', accountData);
                 //转换数据格式
                 this.accountData = [];
                 let tmp = [];
@@ -53,13 +53,15 @@
                     if (data.type === 'account') {
                         tmp.push(data);
                     } else {
-                        let tp = {
-                            label: '',
-                            id: tmp[0].id,
-                            children: tmp
-                        };
-                        this.accountData.push(tp);
-                        tmp = [];
+                        if (tmp.length > 0) {
+                            let tp = {
+                                label: '',
+                                id: tmp[0].id,
+                                children: tmp
+                            };
+                            this.accountData.push(tp);
+                            tmp = [];
+                        }
                         this.accountData.push(data);
                     }
                 }

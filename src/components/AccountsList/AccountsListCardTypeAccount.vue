@@ -13,7 +13,7 @@
                 <el-col :span="20-(node.level-1)*2">
                     <div>
                         <div>{{node.label}}</div>
-                        <div>￥{{node.data.balance}}</div>
+                        <div>￥{{parseFloat(node.data.balance).toFixed(2)}}</div>
                     </div>
                 </el-col>
             </el-row>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-    import {remote} from 'electron';
+    import {ipcRenderer as ipc, remote} from 'electron';
 
     const {Menu, MenuItem} = remote;
 
@@ -39,17 +39,40 @@
                 e.preventDefault();
                 const menu = new Menu();
                 menu.append(new MenuItem({
-                    label: '弹窗', click: this.test
+                    label: '编辑项目', click: this.handleEdit
+                }));
+                menu.append(new MenuItem({
+                    label: '新建账户', click: function () {
+                        ipc.send('RoutePush', `/MiniWindow/AccountEditor/new?type=1`);
+                    }
+                }));
+                menu.append(new MenuItem({
+                    label: '新建分组', click: function () {
+                        ipc.send('RoutePush', `/MiniWindow/AccountEditor/new?type=0`);
+                    }
+                }));
+                menu.append(new MenuItem({
+                    label: '删除此账户', click: this.handleDelete
                 }));
                 menu.popup();
             },
             test() {
                 alert('bbb');
+            },
+            handleEdit() {
+                ipc.send('RoutePush', `/MiniWindow/AccountEditor/${this.node.data.id}`);
+            },
+            handleDelete() {
+                this.$confirm(`此操作将永久删除账户"${this.node.data.label}"，是否继续？`,'提示',{
+                    confirmButtonText:'确定',
+                    cancelButtonText:'取消',
+                    type:'warning'
+                }).then(()=>{
+                    ipc.send('delAccountItem', this.node.data.id);
+                })
             }
         },
-        computed: {
-
-        },
+        computed: {},
         watch: {
             isCurrent: function (n, o) {
                 console.log(n, o);

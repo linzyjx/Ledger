@@ -19,6 +19,7 @@ import BillList from "./components/BillList/BillList";
 import BillListMain from "./components/BillList/BillListMain";
 import Category from "./components/Category/Category";
 import CategoryPage from "./components/Category/CategoryPage";
+import AccountListEditor from "./components/AccountsList/MiniWindow/AccountListEditor";
 
 
 Vue.config.productionTip = false;
@@ -87,6 +88,11 @@ const router = new VueRouter({
                         path: '/MiniWindow/BillItemAdder/:type',
                         name: 'BillItemAdder',
                         component: BillListItemAdder
+                    },
+                    {
+                        path: '/MiniWindow/AccountEditor/:id',
+                        name: 'AccountListEditor',
+                        component: AccountListEditor
                     }
                 ]
             }

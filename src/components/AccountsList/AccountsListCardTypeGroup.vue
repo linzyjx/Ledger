@@ -12,7 +12,7 @@
                 <el-col :span="14">
                     <div>
                         <div>{{node.label}}</div>
-                        <div>￥{{node.data.balance}}</div>
+                        <div>￥{{parseFloat(node.data.balance).toFixed(2)}}</div>
                     </div>
                 </el-col>
                 <el-col :span="4">
@@ -28,6 +28,10 @@
 </template>
 
 <script>
+    import {ipcRenderer as ipc, remote} from 'electron';
+
+    const {Menu, MenuItem} = remote;
+
     export default {
         data() {
             return {
@@ -49,8 +53,47 @@
                 tNode.expanded = !tNode.expanded;
                 console.log(tNode.isCurrent);
             },
-            handleContextMenu() {
-                alert('aaa');
+            handleContextMenu(e) {
+                e.preventDefault();
+                const menu = new Menu();
+                menu.append(new MenuItem({
+                    label: '编辑项目', click: this.handleEdit
+                }));
+                menu.append(new MenuItem({
+                    label: '新建账户', click: function () {
+                        ipc.send('RoutePush', `/MiniWindow/AccountEditor/new?type=1`);
+                    }
+                }));
+                menu.append(new MenuItem({
+                    label: '新建分组', click: function () {
+                        ipc.send('RoutePush', `/MiniWindow/AccountEditor/new?type=0`);
+                    }
+                }));
+                menu.append(new MenuItem({
+                    label: '删除此分组', click: this.handleDelete
+                }));
+                menu.popup();
+            },
+            handleEdit() {
+                ipc.send('RoutePush', `/MiniWindow/AccountEditor/${this.node.data.id}`);
+            },
+            handleDelete() {
+                if (this.node.childNodes.length > 0) {
+                    this.$message({
+                        message: '请先移除组内账户',
+                        type: 'error',
+                        offset: 50,
+                        duration: 2000,
+                    });
+                    return;
+                }
+                this.$confirm(`此操作将永久删除账户组"${this.node.data.label}"，是否继续？`, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    ipc.send('delAccountItem', this.node.data.id);
+                })
             }
         }
     }

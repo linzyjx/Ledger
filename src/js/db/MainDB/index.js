@@ -229,13 +229,13 @@ async function deleteCategoryItem(id) {
         await db.run(SQL`UPDATE category_list
                     SET category_children=json_remove(category_children, ${parentFullKey})
                     WHERE category_id=${parentId}`);
+        await db.run(SQL`UPDATE bill_list SET category=${parentId} WHERE category = ${id}`);
         await db.run(SQL`DELETE FROM category_list WHERE category_id=${id}`);
         await db.run(`commit`);
     } catch (e) {
         await db.run(`rollback`);
         console.error(e);
     }
-
 }
 
 async function updateCategoryItem(id, data) {
@@ -260,18 +260,8 @@ async function updateAccountList(id, dropNodeId, dropType) {
                             SET account_children=json_remove(account_children, ${oldParentFullKey})
                             WHERE account_id = ${oldParentId}`);
         if (dropType === 'inner') {
-            let {account_children: children}
-                = await db.get(SQL`SELECT account_children
-                                    FROM account_list
-                                    WHERE account_id = ${dropNodeId}`);
-            if (children === null) {
-                children = '[]';
-            }
-            children = JSON.parse(children);
-            children.push(id);
-            await db.run(SQL`UPDATE account_list
-                                SET account_children=${JSON.stringify(children)}
-                                WHERE account_id = ${dropNodeId}`);
+            //组件复用
+            insertAccountTreeNodeTypeInner(db, id, dropNodeId);
         } else {
             let {id: parentId, children: children}
                 = await db.get(SQL`SELECT account_id as id, account_children as children
@@ -309,6 +299,125 @@ async function updateAccountList(id, dropNodeId, dropType) {
     }
 }
 
+async function insertAccountTreeNodeTypeInner(db, id, dropNodeId) {
+    let {account_children: children}
+        = await db.get(SQL`SELECT account_children
+                                    FROM account_list
+                                    WHERE account_id = ${dropNodeId}`);
+    if (children === null) {
+        children = '[]';
+    }
+    children = JSON.parse(children);
+    children.push(id);
+    await db.run(SQL`UPDATE account_list
+                                SET account_children=${JSON.stringify(children)}
+                                WHERE account_id = ${dropNodeId}`);
+}
+
+async function updateAccountItem(id, changeData) {
+    let db = await loadDBFile();
+    console.log(id, changeData);
+    await db.run(`begin transaction`);
+    try {
+        let data = {};
+        if (changeData.name !== undefined) data.account_name = changeData.name;
+        if (changeData.type !== undefined) data.account_type = changeData.type;
+        if (changeData.color !== undefined) data.account_color = changeData.color;
+
+        let query = SQL`UPDATE account_list SET `;
+        let firstFlag = false;
+        for (let item of Object.keys(data)) {
+            query.append(firstFlag ? ',' : '').append(item).append(SQL`=${data[item]} `);
+            firstFlag = true
+        }
+        if (firstFlag === true) {
+            query.append(SQL`WHERE account_id=${id}`);
+            await db.run(query);
+        }
+        if (changeData.group !== undefined) {
+            await updateAccountList(id, changeData.group, 'inner');
+        }
+        await db.run(`commit`);
+    } catch (e) {
+        await db.run(`rollback`);
+        console.error(e, id, changeData);
+    }
+}
+
+async function addAccountItem(data) {
+    let db = await loadDBFile();
+    await db.run(`begin transaction`);
+    try {
+        await db.run(SQL`INSERT INTO account_list(account_name, account_type, account_color)
+                            VALUES (${data.name}, ${data.type}, ${data.color})`);
+        let {id: id} = await db.get(SQL`SELECT last_insert_rowid() as id from account_list limit 1`);
+        await insertAccountTreeNodeTypeInner(db, id, data.group);
+        await db.run(`commit`);
+    } catch (e) {
+        await db.run(`rollback`);
+        console.error(e, data);
+    }
+}
+
+async function deleteAccountItem(id) {
+    let db = await loadDBFile();
+    await db.run(`begin transaction`);
+    console.log('delete:', id);
+    try {
+        let item = {};
+        ({account_name: item.name, account_type: item.type, children_length: item.children_length}
+            = await db.get(SQL`SELECT account_name, account_type, json_array_length(account_children) as children_length
+                        FROM account_list
+                        WHERE account_id = ${id}`));
+        if (item.children_length > 0) {
+            console.error(item);
+            throw `deleteAccountItem: id=${id} type is group & length>0 ${item.children_length}`;
+        }
+        let {account_id: parentId, fullkey: parentFullKey}
+            = await db.get(SQL`SELECT account_id, parent.fullkey as fullkey
+                                FROM account_list,
+                                     json_each(account_children) parent
+                                WHERE parent.value = ${id}`);
+        await db.run(SQL`UPDATE account_list
+                    SET account_children=json_remove(account_children, ${parentFullKey})
+                    WHERE account_id=${parentId}`);
+        if (item.type === 1) {
+            //修改转账交易的对方账目为收入/支出
+            await db.run(SQL`insert or
+                        replace
+                        into bill_list(id, balance, name, time, type, amount, party_name, party, account, category,
+                                       transfer_deal, other)
+                        select t1.id,
+                               t1.balance,
+                               t2.name,
+                               t1.time,
+                               t2.type,
+                               t1.amount,
+                               ${item.name},
+                               t1.party,
+                               t1.account,
+                               t1.category,
+                               null,
+                               t1.other
+                        from bill_list as t1,
+                             (SELECT id, (CASE WHEN amount >= 0 THEN 0 ELSE 1 END) as type, (name || ' (已删除)') as name
+                              FROM bill_list,
+                                   (SELECT transfer_deal
+                                    FROM bill_list
+                                    WHERE account = ${id}
+                                      AND type = 2) t2
+                              WHERE id = t2.transfer_deal) as t2
+                        where t1.id = t2.id`);
+        }
+        await db.run(SQL`DELETE FROM bill_list WHERE account=${id}`);
+        await db.run(SQL`DELETE FROM account_list WHERE account_id=${id}`);
+        await db.run(`commit`);
+    } catch (e) {
+        console.error(e, `id=${id}`,e.stack);
+        await db.run(`rollback`);
+    }
+}
+
 export {
     updateDetailItem,
     addDetailItem,
@@ -317,7 +426,10 @@ export {
     addCategoryItem,
     deleteCategoryItem,
     updateCategoryItem,
-    updateAccountList
+    updateAccountList,
+    updateAccountItem,
+    addAccountItem,
+    deleteAccountItem
 }
 
 
