@@ -105,8 +105,10 @@
                 for (let item of this.data) {
                     if (item.type === 'group') {
                         item.balance = 0;
-                        for (let child_item of item.children) {
-                            item.balance = Math.round((child_item.balance + item.balance) * 100) / 100;
+                        if (item.children && item.children.length > 0) {
+                            for (let child_item of item.children) {
+                                item.balance = Math.round((child_item.balance + item.balance) * 100) / 100;
+                            }
                         }
                     }
                     // this.data[0].balance = Math.round((this.data[0].balance + item.balance) * 100) / 100;

@@ -136,4 +136,8 @@
     .category-list .el-tree-node {
         padding: 3px 0 3px 0;
     }
+
+    .category-list .el-scrollbar__wrap {
+        overflow-x: hidden;
+    }
 </style>

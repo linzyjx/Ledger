@@ -1,8 +1,9 @@
 'use strict';
 
-import {app, protocol, globalShortcut, ipcRenderer as ipc} from 'electron'
+import {app, protocol, globalShortcut} from 'electron'
 import {installVueDevtools} from 'vue-cli-plugin-electron-builder/lib'
 import {mainWindow, createMainWindow} from "./js/MainWindow";
+import {checkDatabase} from './js/db'
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -47,6 +48,7 @@ app.on('ready', async () => {
             mainWindow.webContents.openDevTools();
         })
     }
+    checkDatabase();
     createMainWindow();
 });
 
