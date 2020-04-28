@@ -61,14 +61,14 @@
             async getData() {
                 this.categoryData = await getCategoryList();
                 this.tradingData = await getBilllistDataByAccountId(this.$route.params.id);
-                //总账本重算余额
-                if (Number(this.$route.params.id) === 0) {
-                    let sum = 0;
-                    for (let item of this.tradingData) {
-                        sum += item.amount;
-                        item.balance = sum;
-                    }
-                }
+                // //总账本重算余额
+                // if (Number(this.$route.params.id) === 0) {
+                //     let sum = 0;
+                //     for (let item of this.tradingData) {
+                //         sum += item.amount;
+                //         item.balance = sum;
+                //     }
+                // }
                 let tempData = [];
                 console.log('getData:', this.$route.params.id);
                 // eslint-disable-next-line no-unused-vars

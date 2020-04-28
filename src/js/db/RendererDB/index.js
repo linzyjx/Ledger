@@ -4,6 +4,7 @@ import {loadReadDBFile} from '../index'
 // let DBFileSrc = os.homedir().toString() + '\\Roaming\\DemoAPP\\example.db';
 
 async function getBilllistDataByAccountId(accountId) {
+    console.log('getBilllistDataByAccountId',accountId);
     let db = await loadReadDBFile();
     accountId = Number(accountId);
     if (Number(accountId) === 0) {
@@ -13,7 +14,7 @@ async function getBilllistDataByAccountId(accountId) {
     if (accountType === 1) {
         return await db.all(SQL`SELECT * FROM bill_list WHERE account=${accountId} ORDER BY time ASC`);
     } else if (accountType === 0) {
-        return await db.all(SQL`SELECT bill_list.*
+        let data = await db.all(SQL`SELECT bill_list.*
                                 FROM bill_list,
                                      (SELECT value as childId
                                       FROM account_list,
@@ -21,6 +22,14 @@ async function getBilllistDataByAccountId(accountId) {
                                       WHERE account_id = ${accountId}) list
                                 WHERE account = (list.childId)
                                 ORDER BY time ASC`);
+        console.log(data);
+        //账户组类型需重算余额
+        let sum = 0;
+        for (let item of data) {
+            sum += item.amount;
+            item.balance = sum;
+        }
+        return data;
     }
 }
 

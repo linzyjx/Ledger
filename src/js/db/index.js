@@ -5,7 +5,8 @@ import path from "path";
 import os from "os";
 import fs from 'fs';
 
-const DBFileSrc = path.resolve(os.homedir(), 'AppData', 'Roaming', 'DemoAPP', 'example.db');
+// const DBFileSrc = path.resolve(os.homedir(), 'AppData', 'Roaming', 'DemoAPP', 'example.db');
+const DBFileSrc = path.resolve(os.homedir(), 'AppData', 'Roaming', 'Ledger', 'data', 'data.db');
 
 async function loadDBFile() {
     return await sqlite.open(DBFileSrc, {}).catch(e => {
@@ -55,7 +56,7 @@ limit 1;`;
 
 //检查数据库文件是否存在
 function checkDatabase() {
-    const testFileDir = path.resolve(os.homedir(), 'AppData', 'Roaming', 'DemoAPP', 'bbb');
+    const testFileDir = path.resolve(os.homedir(), 'AppData', 'Roaming', 'Ledger', 'data');
     try {
         fs.accessSync(DBFileSrc);
     } catch (e) {
