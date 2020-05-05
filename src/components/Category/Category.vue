@@ -27,7 +27,7 @@
         components: {CategoryListHeader, CategoryList},
         data() {
             return {
-                type: 0
+                type: 1
             }
         }
     }

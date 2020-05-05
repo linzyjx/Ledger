@@ -44,7 +44,6 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">确定</el-button>
-                <el-button type="primary" @click="sayHi">aa</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -85,9 +84,6 @@
         },
 
         methods: {
-            sayHi: function () {
-                // alert('Hi!(' + this.account + ')');
-            },
             async getData() {
                 // this.data = await getBilllistDataById(this.$route.params.id);
                 // console.log('open:', this.$route.params.id, this.data);

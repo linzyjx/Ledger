@@ -1,8 +1,8 @@
 <template>
     <div class="category-list-header">
         <el-radio-group v-model="selectedType" size="medium" @change="handleChange">
-            <el-radio-button :label="0">收入</el-radio-button>
             <el-radio-button :label="1">支出</el-radio-button>
+            <el-radio-button :label="0">收入</el-radio-button>
         </el-radio-group>
         <el-button @click="handlePlusButton" circle icon="el-icon-plus" size="medium"
                    style="margin-left: 5px"></el-button>

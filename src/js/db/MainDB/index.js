@@ -101,8 +101,8 @@ async function addDetailItem(data) {
 }
 
 async function addAnDeatilItem(db, data) {
-    let query = SQL`INSERT INTO bill_list(name, time, type, amount, balance, account, category) 
-                        VALUES(${data.name},${data.time},${data.type},${data.amount},${data.balance},${data.account},${data.category})`;
+    let query = SQL`INSERT INTO bill_list(name, time, type, amount, balance, account, category, party_name) 
+                        VALUES(${data.name},${data.time},${data.type},${data.amount},${data.balance},${data.account},${data.category},${data.party_name})`;
     await db.run(query);
     let id = (await db.all(SQL`SELECT last_insert_rowid() as id from bill_list limit 1`))[0].id;
     console.log('get id:', id);
@@ -413,7 +413,7 @@ async function deleteAccountItem(id) {
         await db.run(SQL`DELETE FROM account_list WHERE account_id=${id}`);
         await db.run(`commit`);
     } catch (e) {
-        console.error(e, `id=${id}`,e.stack);
+        console.error(e, `id=${id}`, e.stack);
         await db.run(`rollback`);
     }
 }

@@ -16,7 +16,7 @@
                 <span slot-scope="{node,data}" class="cate-slot-scope">
                     <i :class="['cate-icon',data.icon]"
                        :style="{'background-color':(data.color?data.color:'#ffffff')}"></i>
-                    <span>{{data.label}},{{data.id}}</span>
+                    <span>{{data.label}}</span>
                 </span>
             </el-tree>
         </el-scrollbar>

@@ -1,6 +1,6 @@
 {
   "name": "Ledger",
-  "version": "0.6.3",
+  "version": "0.6.6",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
