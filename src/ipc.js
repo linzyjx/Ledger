@@ -20,6 +20,7 @@ import {
     addAccountItem,
     deleteAccountItem
 } from './js/db/MainDB';
+import {exportDBFile, importDBFile} from './js/setting/backup'
 
 // 主窗口创建时
 function mainWindowInit() {
@@ -92,7 +93,12 @@ function mainWindowInit() {
             mainWindow.webContents.send('freshAccountList');
         });
     });
-
+    ipcMain.on('exportDBFile', (e) => {
+        exportDBFile(e);
+    });
+    ipcMain.on('importDBFile', (e) => {
+        importDBFile(e);
+    });
     startWindow(mainWindow);
     // console.log(mainWindow);
 }

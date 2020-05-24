@@ -34,7 +34,7 @@ where bill_list.time > t1.time
 order by bill_list.time ASC
 limit 1;`;
     let data = (await db.get(query));
-    if (data == undefined) return undefined;
+    if (data === undefined) return undefined;
     return data.id;
 }
 
@@ -50,7 +50,7 @@ where bill_list.time < t1.time
 order by bill_list.time DESC
 limit 1;`;
     let data = (await db.get(query));
-    if (data == undefined) return undefined;
+    if (data === undefined) return undefined;
     return data.id;
 }
 
@@ -151,4 +151,4 @@ async function initDatabase(dbFileSrc) {
     }
 }
 
-export {getNearlyNewBillId, loadDBFile, loadReadDBFile, getNearlyOldBillId, checkDatabase}
+export {DBFileSrc, getNearlyNewBillId, loadDBFile, loadReadDBFile, getNearlyOldBillId, checkDatabase}

@@ -17,6 +17,10 @@
                         <i class="el-icon-paperclip"></i>
                         <template slot="title">类别</template>
                     </el-menu-item>
+                    <el-menu-item index="/App/Statistics">
+                        <i class="el-icon-data-analysis"></i>
+                        <template slot="title">统计</template>
+                    </el-menu-item>
                 </el-main>
                 <el-footer :height="null">
                     <el-menu-item>
@@ -29,7 +33,7 @@
                         </el-dropdown>
                         <template slot="title">新建</template>
                     </el-menu-item>
-                    <el-menu-item index="">
+                    <el-menu-item index="/App/Setting">
                         <i class="el-icon-setting"></i>
                         <template slot="title">设置</template>
                     </el-menu-item>

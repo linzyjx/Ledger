@@ -4,11 +4,18 @@ import {loadReadDBFile} from '../index'
 // let DBFileSrc = os.homedir().toString() + '\\Roaming\\DemoAPP\\example.db';
 
 async function getBilllistDataByAccountId(accountId) {
-    console.log('getBilllistDataByAccountId',accountId);
+    console.log('getBilllistDataByAccountId', accountId);
     let db = await loadReadDBFile();
     accountId = Number(accountId);
     if (Number(accountId) === 0) {
-        return await db.all(SQL`SELECT * FROM bill_list ORDER BY time ASC`);
+        let data = await db.all(SQL`SELECT * FROM bill_list ORDER BY time ASC`);
+        //账户组类型需重算余额
+        let sum = 0;
+        for (let item of data) {
+            sum += item.amount;
+            item.balance = sum;
+        }
+        return data;
     }
     let {type: accountType} = await db.get(SQL`SELECT account_type as type FROM account_list WHERE account_id = ${accountId}`)
     if (accountType === 1) {

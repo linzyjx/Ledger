@@ -3,6 +3,10 @@ import VueRouter from "vue-router";
 import ElementUI from 'element-ui';
 import store from './store';
 
+import Echarts from 'vue-echarts';
+import 'echarts/lib/chart/bar'
+import 'echarts/lib/component/tooltip'
+
 import 'element-ui/lib/theme-chalk/index.css';
 
 import App from './App.vue';
@@ -21,10 +25,22 @@ import Category from "./components/Category/Category";
 import CategoryPage from "./components/Category/CategoryPage";
 import AccountListEditor from "./components/AccountsList/MiniWindow/AccountListEditor";
 
+import Setting from "./components/Setting/Setting";
+import About from "./components/Setting/views/About";
+import Common from "./components/Setting/views/Common";
+
+import Statistics from './components/Statistics/Statistics';
+import NetBalance from "./components/Statistics/views/NetBalance";
+import NetIO from "./components/Statistics/views/NetIO";
+
+import CollapseTransition from 'element-ui/lib/transitions/collapse-transition';
+
 
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
 Vue.use(ElementUI);
+Vue.component(CollapseTransition.name, CollapseTransition);
+Vue.component('v-chart', Echarts);
 
 const isDev = process.env.NODE_ENV !== "production";
 Vue.config.performance = isDev;
@@ -57,17 +73,50 @@ const router = new VueRouter({
                         path: '/App/Category',
                         name: 'Category',
                         component: Category,
-                        children:[{
+                        children: [{
                             path: '/App/Category/:id',
                             name: 'CategoryPage',
                             component: CategoryPage,
                         }]
                     },
                     {
+                        path: '/App/Statistics',
+                        name: 'Statistics',
+                        component: Statistics,
+                        children: [
+                            {
+                                path: '/App/Statistics/NetBalance',
+                                name: NetBalance,
+                                component: NetBalance
+                            },
+                            {
+                                path: '/App/Statistics/NetIO',
+                                name: 'NetIO',
+                                component: NetIO
+                            }]
+                    },
+                    {
                         path: '/App/HelloWorld',
                         name: 'HelloWorld',
                         component: HelloWorld
-                    },]
+                    },
+                    {
+                        path: '/App/Setting',
+                        name: 'Setting',
+                        component: Setting,
+                        children: [
+                            {
+                                path: '/App/Setting/About',
+                                name: 'About',
+                                component: About
+                            },
+                            {
+                                path: '/App/Setting/Common',
+                                name: 'Common',
+                                component: Common
+                            }]
+                    }
+                ]
             },
             {
                 path: '/MiniWindow',

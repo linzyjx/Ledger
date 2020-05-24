@@ -1,6 +1,6 @@
 {
   "name": "Ledger",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -16,6 +16,7 @@
   "dependencies": {
     "aws-sdk": "^2.630.0",
     "core-js": "^3.6.4",
+    "echarts": "^4.7.0",
     "element-ui": "^2.13.0",
     "npm-check": "^5.9.2",
     "pg-hstore": "^2.3.3",
@@ -23,6 +24,7 @@
     "sqlite": "^3.0.3",
     "sqlite3": "^4.1.1",
     "vue": "^2.6.11",
+    "vue-echarts": "^5.0.0-beta.0",
     "vue-router": "^3.1.6",
     "vuex": "^3.1.2"
   },
@@ -34,6 +36,8 @@
     "electron-rebuild": "^1.10.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.1",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
     "vue-cli-plugin-electron-builder": "~1.4.5",
     "vue-template-compiler": "^2.6.11"
   },
