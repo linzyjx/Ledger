@@ -13,7 +13,8 @@
             <AccountSelector v-if="data.type===2" name="转入账户" :account="data.transfer_deal_account"
                              ref="transfer_deal_selector"
                              @change="data.transfer_deal_account=$event"/>
-            <CategorySelector v-if="data.type!==2" :id="data.category" :type="data.type" @change="data.category=Number($event)"/>
+            <CategorySelector v-if="data.type!==2" :id="data.category" :type="data.type"
+                              @change="data.category=Number($event)"/>
             <el-form-item label="名称">
                 <el-input v-model="data.name" @focus="focus($event)"></el-input>
             </el-form-item>
@@ -148,7 +149,10 @@
             },
             async getAccountList() {
                 this.accountList = await getAccountList();
-                console.log(this.accountList);
+                if (this.accountList[this.data.account] === undefined) {
+                    this.data.account = 0;
+                }
+                console.log('getAccountList', this.accountList);
             }
         },
         watch: {
@@ -170,6 +174,9 @@
 
             },
             'data.account': function (newVal, oldVal) {
+                if (this.accountList[newVal] === undefined) {
+                    this.data.account = 0;
+                }
                 if (newVal === this.data.transfer_deal_account) {
                     this.data.account = oldVal;
                     this.$refs.account_selector.$emit('updateId');

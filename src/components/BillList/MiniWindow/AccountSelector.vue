@@ -80,7 +80,11 @@
             account: {
                 handler(newId) {
                     console.log('watch account', newId);
-                    this.accountId = newId;
+                    if (newId !== 0) {
+                        this.accountId = newId;
+                    } else {
+                        this.accountId=undefined;
+                    }
                     this.loadAccountListData();
                 },
                 deep: true
