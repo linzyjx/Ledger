@@ -1,24 +1,41 @@
-# element-test
+# Ledger
+一个基于Electron的记账工具
 
-## Project setup
+## 架构
+Electron + sqlite + Vue + Element
+
+## 特性
+* 多账户管理
+* 支持收入、支出、转账交易
+* 支持标签、分类功能
+* 图表统计
+* 数据备份还原
+
+## 工程使用
+### 配置工程
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 开发模式编译运行
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### 编译工程
 ```
 npm run build
 ```
 
-### Lints and fixes files
+### 整理和修复文件
 ```
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 后续开发
+* 跨平台
+* 数据实时同步
+* 隐私安全性加强
+
+## 许可证
+GPLv3
