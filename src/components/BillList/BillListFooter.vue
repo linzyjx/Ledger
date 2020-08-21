@@ -2,15 +2,15 @@
     <div class="billlist-footer">
         <el-row type="flex" align="bottom">
             <el-col :span="10" class="title"><span>净值：</span></el-col>
-            <el-col :span="10" :offset="2" class="value"><span>{{netBalance}}</span></el-col>
+            <el-col :span="10" :offset="2" class="value"><span>￥{{netBalance}}</span></el-col>
         </el-row>
         <el-row type="flex" align="bottom">
             <el-col :span="10" class="title"><span>本月支出：</span></el-col>
-            <el-col :span="10" :offset="2" class="value"><span>{{monthlySpending}}</span></el-col>
+            <el-col :span="10" :offset="2" class="value"><span>￥{{monthlySpending}}</span></el-col>
         </el-row>
         <el-row type="flex" align="bottom">
             <el-col :span="10" class="title"><span>本月收入：</span></el-col>
-            <el-col :span="10" :offset="2" class="value"><span>{{monthlyIncome}}</span></el-col>
+            <el-col :span="10" :offset="2" class="value"><span>￥{{monthlyIncome}}</span></el-col>
         </el-row>
     </div>
 </template>
